@@ -15,10 +15,6 @@ services:
       - ${APP_DATA_DIR}/data:/data
       - ${APP_DATA_DIR}:/appdata
     environment:
-      APPS_SUBNET: "${NETWORK_IP}/16"
-      RPC_USER: "bch"
-      RPC_PASSWORD: "${APP_PASSWORD}"
-      BCH_RPC_PORT: "28332"
       PAYOUT_ADDRESS: "114iaCze9nXjXDSWqRZBXQp5tLPtraWyAS"
     command:
       - /bin/sh
@@ -40,79 +36,34 @@ services:
           mv "$$tmp" "$$envfile"
         fi
 
-        mkdir -p /data/node /data/pool/config /data/pool/www/pool /data/pool/www/users
+        mkdir -p /data/pool/config /data/pool/logs /data/pool/www/pool /data/pool/www/users
 
         touch /appdata/settings.yml
         chown 1000:1000 /appdata/settings.yml || true
-
-        printf '%s\n' \
-          "rpcuser=$$RPC_USER" \
-          "rpcpassword=$$RPC_PASSWORD" \
-          "rpcport=$$BCH_RPC_PORT" \
-          > /data/node/bitcoin.conf
-        chown 1000:1000 /data/node/bitcoin.conf || true
+        chown -R 1000:1000 /data/pool
 
         if [ ! -f /data/pool/config/ckpool.conf ]; then
-          printf '{\n  "btcd": [{"url": "bchn:%s", "auth": "%s", "pass": "%s"}],\n  "btcaddress": "%s",\n  "btcsig": "",\n  "blockpoll": 500,\n  "nonce1length": 4,\n  "nonce2length": 8,\n  "update_interval": 30,\n  "version_rolling": true,\n  "version_rolling_limit": 8,\n  "mindiff": 512,\n  "startdiff": 32768,\n  "maxdiff": 0,\n  "logdir": "/tmp",\n  "webdir": "/www/pool",\n  "userdir": "/www/users"\n}\n' \
-            "$$BCH_RPC_PORT" "$$RPC_USER" "$$RPC_PASSWORD" "$$PAYOUT_ADDRESS" \
-            > /data/pool/config/ckpool.conf
-          chown -R 1000:1000 /data/pool
+          printf '{\n  "btcd": [{"url": "umbrel-host:9002", "auth": "zahidliono", "pass": "Idd=9108", "notify": true}],\n  "btcaddress": "%s",\n  "btcsig": "/ZHT Solo BCH/",\n  "blockpoll": 100,\n  "nonce1length": 4,\n  "nonce2length": 8,\n  "update_interval": 30,\n  "version_mask": "1fffe000",\n  "serverurl": ["0.0.0.0:3333"],\n  "mindiff": 1,\n  "startdiff": 42,\n  "maxdiff": 0,\n  "logdir": "/data/pool/logs"\n}\n' \
+            "$$PAYOUT_ADDRESS" > /data/pool/config/ckpool.conf
+          chown 1000:1000 /data/pool/config/ckpool.conf
         fi
-
-  bchn:
-    image: theretromike/nodes:bitcoincash
-    user: "1000:1000"
-    restart: unless-stopped
-    stop_grace_period: 15m30s
-    depends_on:
-      init:
-        condition: service_completed_successfully
-    ports:
-      - "28333:28333/tcp"   # P2P
-    volumes:
-      - ${APP_DATA_DIR}/data/node:/data
-    command: >
-      bitcoind
-      -datadir=/data
-      -server=1
-      -printtoconsole=1
-      -maxconnections=256
-      -rpcuser=bch
-      -rpcpassword=${APP_PASSWORD}
-      -rpcbind=0.0.0.0
-      -rpcport=28332
-      -rpcallowip=127.0.0.1/32
-      -rpcallowip=${NETWORK_IP}/16
-      -rpcallowip=10.0.0.0/8
-      -rpcallowip=172.16.0.0/12
-      -rpcallowip=192.168.0.0/16
-      -port=28333
-      -zmqpubhashblock=tcp://0.0.0.0:28334
-    healthcheck:
-      test: ["CMD-SHELL", "bitcoin-cli -datadir=/data getblockchaininfo >/dev/null 2>&1"]
-      interval: 30s
-      timeout: 10s
-      retries: 20
-      start_period: 2m
 
   ckpool:
     image: ghcr.io/zahidliono/zht-ckpool:latest
-    entrypoint: ["/bin/sh"]
-    command:
-      - -ec
-      - |-
-        rm -f /tmp/ckpool/*.pid 2>/dev/null || true
-        exec ckpool -k -B -L -c /config/ckpool.conf
     user: "1000:1000"
-    depends_on:
-      - bchn
     restart: on-failure
     stop_grace_period: 30s
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    extra_hosts:
+      - "umbrel-host:host-gateway"
     ports:
-      - "4567:3333/tcp"     # Stratum
+      - "4567:3333/tcp"     # Stratum — point your ASIC here
     volumes:
-      - ${APP_DATA_DIR}/data/pool/config:/config:ro
-      - ${APP_DATA_DIR}/data/pool/www:/www
+      - ${APP_DATA_DIR}/data/pool/config:/data/pool/config:ro
+      - ${APP_DATA_DIR}/data/pool/logs:/data/pool/logs
+    command: ["-B", "-c", "/data/pool/config/ckpool.conf"]
 
   app:
     image: ghcr.io/zahidliono/zht-bch-pool-app:latest
@@ -120,8 +71,10 @@ services:
     restart: on-failure
     stop_grace_period: 30s
     depends_on:
-      - bchn
-      - ckpool
+      init:
+        condition: service_completed_successfully
+    extra_hosts:
+      - "umbrel-host:host-gateway"
     networks:
       default:
         aliases:
@@ -133,10 +86,10 @@ services:
       - ${APP_DATA_DIR}/data:/data
     environment:
       NETWORK_IP: "${NETWORK_IP}"
-      BCH_RPC_HOST: "bchn"
-      BCH_RPC_PORT: "28332"
-      BCH_RPC_USER: "bch"
-      BCH_RPC_PASS: "${APP_PASSWORD}"
+      BCH_RPC_HOST: "umbrel-host"
+      BCH_RPC_PORT: "9002"
+      BCH_RPC_USER: "zahidliono"
+      BCH_RPC_PASS: "Idd=9108"
       CKPOOL_STATUS_DIR: "/data/pool/www/pool"
       CKPOOL_USERS_DIR: "/data/pool/www/users"
 
