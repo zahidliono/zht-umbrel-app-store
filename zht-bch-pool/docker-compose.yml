@@ -28,7 +28,7 @@ services:
       - |-
         set -eu
 
-        apk add --no-cache envsubst curl >/dev/null
+        apk add --no-cache curl >/dev/null
 
         if [ -n "${JWT_SECRET:-}" ]; then
           envfile="/appdata/.env"
@@ -49,12 +49,28 @@ services:
         touch /appdata/settings.yml
         chown 1000:1000 /appdata/settings.yml || true
 
-        if [ -d /data/templates/init-entrypoint.sh ]; then
-          rm -rf /data/templates/init-entrypoint.sh || true
-        fi
+        printf '#!/bin/sh\nset -e\nexec bitcoind -datadir=/data "$@"\n' \
+          > /data/templates/bchn-entrypoint.sh
+        chmod +x /data/templates/bchn-entrypoint.sh || true
+        chown 1000:1000 /data/templates/bchn-entrypoint.sh || true
 
         if [ ! -f /data/node/bitcoin.conf ]; then
-          envsubst < /data/templates/bitcoin.conf.template > /data/node/bitcoin.conf
+          printf '%s\n' \
+            'server=1' \
+            'printtoconsole=1' \
+            "rpcuser=$$RPC_USER" \
+            "rpcpassword=$$RPC_PASSWORD" \
+            'rpcbind=0.0.0.0' \
+            "rpcport=$$BCH_RPC_PORT" \
+            'rpcallowip=127.0.0.1/32' \
+            "rpcallowip=$$APPS_SUBNET" \
+            'rpcallowip=10.0.0.0/8' \
+            'rpcallowip=172.16.0.0/12' \
+            'rpcallowip=192.168.0.0/16' \
+            "port=$$BCH_P2P_PORT" \
+            "zmqpubhashblock=tcp://0.0.0.0:$$BCH_ZMQ_HASHBLOCK_PORT" \
+            'maxconnections=256' \
+            > /data/node/bitcoin.conf
           chown -R 1000:1000 /data/node
         else
           if grep -q '^maxconnections=' /data/node/bitcoin.conf; then
@@ -128,7 +144,9 @@ services:
         fi
 
         if [ ! -f /data/pool/config/ckpool.conf ]; then
-          envsubst < /data/templates/ckpool.conf.template > /data/pool/config/ckpool.conf
+          printf '{\n  "btcd": [{"url": "bchn:%s", "auth": "%s", "pass": "%s"}],\n  "btcaddress": "%s",\n  "btcsig": "",\n  "blockpoll": 500,\n  "nonce1length": 4,\n  "nonce2length": 8,\n  "update_interval": 30,\n  "version_rolling": true,\n  "version_rolling_limit": 8,\n  "mindiff": 512,\n  "startdiff": 32768,\n  "maxdiff": 0,\n  "logdir": "/tmp",\n  "webdir": "/www/pool",\n  "userdir": "/www/users"\n}\n' \
+            "$$BCH_RPC_PORT" "$$RPC_USER" "$$RPC_PASSWORD" "$$PAYOUT_ADDRESS" \
+            > /data/pool/config/ckpool.conf
           chown -R 1000:1000 /data/pool
         else
           needs_ckpool_regen=0
@@ -144,10 +162,12 @@ services:
           if [ "$$needs_ckpool_regen" -eq 1 ]; then
             existing_addr="$$(grep -oE '\"btcaddress\"[[:space:]]*:[[:space:]]*\"[^\"]*\"' /data/pool/config/ckpool.conf | head -n 1 | sed -E 's/.*\"btcaddress\"[[:space:]]*:[[:space:]]*\"([^\"]*)\".*/\\1/' || true)"
             if [ -n "$$existing_addr" ] && [ "$$existing_addr" != "114iaCze9nXjXDSWqRZBXQp5tLPtraWyAS" ]; then
-              export PAYOUT_ADDRESS="$$existing_addr"
+              PAYOUT_ADDRESS="$$existing_addr"
             fi
-            mv /data/pool/config/ckpool.conf "/data/pool/config/ckpool.conf.bak.$(date +%s 2>/dev/null || echo 0)" || true
-            envsubst < /data/templates/ckpool.conf.template > /data/pool/config/ckpool.conf
+            mv /data/pool/config/ckpool.conf "/data/pool/config/ckpool.conf.bak.$$(date +%s 2>/dev/null || echo 0)" || true
+            printf '{\n  "btcd": [{"url": "bchn:%s", "auth": "%s", "pass": "%s"}],\n  "btcaddress": "%s",\n  "btcsig": "",\n  "blockpoll": 500,\n  "nonce1length": 4,\n  "nonce2length": 8,\n  "update_interval": 30,\n  "version_rolling": true,\n  "version_rolling_limit": 8,\n  "mindiff": 512,\n  "startdiff": 32768,\n  "maxdiff": 0,\n  "logdir": "/tmp",\n  "webdir": "/www/pool",\n  "userdir": "/www/users"\n}\n' \
+              "$$BCH_RPC_PORT" "$$RPC_USER" "$$RPC_PASSWORD" "$$PAYOUT_ADDRESS" \
+              > /data/pool/config/ckpool.conf
             chown -R 1000:1000 /data/pool
           fi
         fi
@@ -224,8 +244,6 @@ services:
       BCH_RPC_PORT: "28332"
       BCH_RPC_USER: "bch"
       BCH_RPC_PASS: "${APP_PASSWORD}"
-      CKPOOL_STATUS_DIR: "/data/pool/www/pool"
-      APP_CHANNEL: "ZHT"
       CKPOOL_STATUS_DIR: "/data/pool/www/pool"
       CKPOOL_USERS_DIR: "/data/pool/www/users"
 
