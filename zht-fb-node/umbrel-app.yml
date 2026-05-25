@@ -4,7 +4,7 @@ name: Fractal Bitcoin (FB) Node
 tagline: Fractal Bitcoin Node. A general node app for Fractal Bitcoin — use with mining pool software to solo mine, or run standalone to contribute to the Fractal Bitcoin network.
 icon: https://framerusercontent.com/images/OvwbMVHXEbVbRGnzNXMBFpVbw.png
 category: Mining Nodes
-version: "0.3.0"
+version: "0.3.0-stable"
 port: 5011
 description: |
   Fractal Bitcoin Node. A general node app for Fractal Bitcoin (FB) that can be used in conjunction with mining pool software to solo mine, or run standalone to contribute to the Fractal Bitcoin network.
