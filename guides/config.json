@@ -217,6 +217,59 @@
           "factor": 2
         }
       }
+    },
+    {
+      "id": "bch",
+      "enabled": true,
+      "coin": "bitcoin-cash",
+      "address": "114iaCze9nXjXDSWqRZBXQp5tLPtraWyAS",
+      "addressType": "bcash",
+      "rewardRecipients": [
+        {
+          "address": "114iaCze9nXjXDSWqRZBXQp5tLPtraWyAS",
+          "percentage": 0
+        }
+      ],
+      "enableAsicBoost": true,
+      "blockRefreshInterval": 0,
+      "jobRebroadcastTimeout": 10,
+      "clientConnectionTimeout": 600,
+      "banning": {
+        "enabled": true,
+        "time": 600,
+        "invalidPercent": 50,
+        "checkThreshold": 50
+      },
+      "ports": {
+        "6002": {
+          "name": "General ASIC",
+          "listenAddress": "0.0.0.0",
+          "difficulty": 1024,
+          "varDiff": {
+            "minDiff": 1,
+            "targetTime": 15,
+            "retargetTime": 90,
+            "variancePercent": 30
+          }
+        }
+      },
+      "daemons": [
+        {
+          "host": "zht-bch-node_node_1",
+          "port": 9002,
+          "user": "zahidliono",
+          "password": "Idd=9108",
+          "zmqBlockNotifySocket": "tcp://zht-bch-node_node_1:7002"
+        }
+      ],
+      "paymentProcessing": {
+        "enabled": true,
+        "minimumPayment": 0.001,
+        "payoutScheme": "SOLO",
+        "payoutSchemeConfig": {
+          "factor": 2
+        }
+      }
     }
   ]
 }

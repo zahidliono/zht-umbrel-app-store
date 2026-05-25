@@ -1,0 +1,25 @@
+manifestVersion: 1
+id: zht-bch-node
+name: Bitcoin Cash (BCH) Node
+tagline: Bitcoin Cash Node. A general node app for Bitcoin Cash — use with mining pool software to solo mine, or run standalone to contribute to the Bitcoin Cash network.
+icon: https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+category: Mining Nodes
+version: "29.0.1"
+port: 5007
+description: |
+  Bitcoin Cash Node. A general node app for Bitcoin Cash that can be used in conjunction with mining pool software to solo mine, or run standalone to contribute to the Bitcoin Cash network.
+
+developer: ZHT
+website: ""
+submitter: ZHT
+submission: ""
+repo: https://github.com/bitcoin-cash-node/bitcoin-cash-node
+support: https://github.com/bitcoin-cash-node/bitcoin-cash-node
+gallery:
+  - https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+releaseNotes: >-
+  2026.05.25 - Initial Release
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
