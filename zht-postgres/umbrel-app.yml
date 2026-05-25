@@ -1,0 +1,28 @@
+manifestVersion: 1
+id: zht-postgres
+name: PostgreSQL + pgAdmin
+tagline: PostgreSQL database with a browser-based pgAdmin UI
+icon: https://raw.githubusercontent.com/TriLogic/umbrel-store/refs/heads/main/umbrel-store-postgre-pgadmin/icon.svg
+category: Databases
+version: "1.0.0"
+port: 5050
+description: >-
+  A bundled PostgreSQL 16 database and pgAdmin 4 web UI. Required by the ZHT MiningCore app for pool statistics storage.
+  Persistent volumes, proxy-safe settings for Umbrel, and a pre-registered local server.
+
+  © 2026 ZHT. All rights reserved.
+
+developer: ZHT
+website: ""
+submitter: ZHT
+submission: ""
+repo: https://github.com/zahidliono/zht-umbrel-app-store
+support: https://github.com/zahidliono/zht-umbrel-app-store
+gallery:
+  - https://raw.githubusercontent.com/TriLogic/umbrel-store/refs/heads/main/umbrel-store-postgre-pgadmin/icon.svg
+releaseNotes: >-
+  2026.05.25 - Initial Release
+dependencies: []
+path: ""
+defaultUsername: admin@umbrel.local
+defaultPassword: P@ssw0rd

@@ -31,7 +31,7 @@
   },
   "persistence": {
     "postgres": {
-      "host": "retro-mike-postgres_db_1",
+      "host": "zht-postgres_db_1",
       "port": 5432,
       "user": "miningcore",
       "password": "miningcore",

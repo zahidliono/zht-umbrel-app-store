@@ -7,15 +7,17 @@ category: SOLO Crypto Mining
 version: "1.4.0"
 port: 8560
 description: |
-  MiningCore Mining Pool App configured for BTC, BSV, and DGB solo mining.
+  MiningCore Mining Pool App configured for BTC, BSV, DGB, and BCH solo mining.
 
-  Requires the ZHT BTC Node, BSV Node, and DGB Node apps to be installed and synced.
-  Also requires the Postgres app from the Retro Mike Community App Store.
+  Requires the ZHT BTC Node, BSV Node, DGB Node, and BCH Node apps to be installed and synced.
+  Also requires the ZHT PostgreSQL app.
+
+  © 2026 ZHT. All rights reserved.
 
 developer: ZHT
-website: ""
+website: https://github.com/zahidliono/zht-umbrel-app-store
 submitter: ZHT
-submission: ""
+submission: https://github.com/zahidliono/zht-umbrel-app-store
 repo: https://hub.docker.com/r/theretromike/miningcore
 support: https://hub.docker.com/r/theretromike/miningcore
 gallery:
