@@ -7,9 +7,9 @@ category: SOLO Crypto Mining
 version: "1.4.0"
 port: 8560
 description: |
-  MiningCore Mining Pool App configured for BTC, BSV, DGB, and BCH solo mining.
+  MiningCore Mining Pool App configured for BTC, BSV, DGB, BCH, and Fractal Bitcoin solo mining.
 
-  Requires the ZHT BTC Node, BSV Node, DGB Node, and BCH Node apps to be installed and synced.
+  Requires the ZHT BTC Node, BSV Node, DGB Node, BCH Node, and FB Node apps to be installed and synced.
   Also requires the ZHT PostgreSQL app.
 
   © 2026 ZHT. All rights reserved.

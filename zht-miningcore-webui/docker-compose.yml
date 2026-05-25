@@ -14,7 +14,7 @@ services:
       - /home/umbrel/.miningcore:/app/miningcore
     user: "1000:1000"
     environment:
-      - POOL_NAME=ZHT Solo Mining Pool | BTC · BSV · DGB · BCH
+      - POOL_NAME=ZHT Solo Mining Pool | BTC · BSV · DGB · BCH · FB
       - STRATUM_HOST=umbrel.local
       - API_BASE_URL=http://zht-miningcore_server_1:4000/api
       - PLATFORM=UMBREL

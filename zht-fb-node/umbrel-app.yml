@@ -1,0 +1,29 @@
+manifestVersion: 1
+id: zht-fb-node
+name: Fractal Bitcoin (FB) Node
+tagline: Fractal Bitcoin Node. A general node app for Fractal Bitcoin — use with mining pool software to solo mine, or run standalone to contribute to the Fractal Bitcoin network.
+icon: https://framerusercontent.com/images/OvwbMVHXEbVbRGnzNXMBFpVbw.png
+category: Mining Nodes
+version: "0.3.0"
+port: 5011
+description: |
+  Fractal Bitcoin Node. A general node app for Fractal Bitcoin (FB) that can be used in conjunction with mining pool software to solo mine, or run standalone to contribute to the Fractal Bitcoin network.
+
+  Fractal Bitcoin is a Bitcoin Layer 2 scaling solution that uses SHA256d mining, fully compatible with Bitcoin ASICs.
+
+  © 2026 ZHT. All rights reserved.
+
+developer: ZHT
+website: https://github.com/zahidliono/zht-umbrel-app-store
+submitter: ZHT
+submission: https://github.com/zahidliono/zht-umbrel-app-store
+repo: https://github.com/fractal-bitcoin/fractald-release
+support: https://github.com/fractal-bitcoin/fractald-release
+gallery:
+  - https://framerusercontent.com/images/OvwbMVHXEbVbRGnzNXMBFpVbw.png
+releaseNotes: >-
+  2026.05.25 - Initial Release
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""

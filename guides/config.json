@@ -270,6 +270,58 @@
           "factor": 2
         }
       }
+    },
+    {
+      "id": "fb",
+      "enabled": true,
+      "coin": "bitcoin",
+      "address": "bc1qfhf0axdqemskfs6pdlrun9q0ulg0rmhrercjzj",
+      "rewardRecipients": [
+        {
+          "address": "bc1qfhf0axdqemskfs6pdlrun9q0ulg0rmhrercjzj",
+          "percentage": 0
+        }
+      ],
+      "enableAsicBoost": true,
+      "blockRefreshInterval": 0,
+      "jobRebroadcastTimeout": 10,
+      "clientConnectionTimeout": 600,
+      "banning": {
+        "enabled": true,
+        "time": 600,
+        "invalidPercent": 50,
+        "checkThreshold": 50
+      },
+      "ports": {
+        "6006": {
+          "name": "General ASIC",
+          "listenAddress": "0.0.0.0",
+          "difficulty": 1024,
+          "varDiff": {
+            "minDiff": 1,
+            "targetTime": 15,
+            "retargetTime": 90,
+            "variancePercent": 30
+          }
+        }
+      },
+      "daemons": [
+        {
+          "host": "zht-fb-node_node_1",
+          "port": 9007,
+          "user": "zahidliono",
+          "password": "Idd=9108",
+          "zmqBlockNotifySocket": "tcp://zht-fb-node_node_1:7007"
+        }
+      ],
+      "paymentProcessing": {
+        "enabled": true,
+        "minimumPayment": 0.001,
+        "payoutScheme": "SOLO",
+        "payoutSchemeConfig": {
+          "factor": 2
+        }
+      }
     }
   ]
 }
