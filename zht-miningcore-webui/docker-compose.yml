@@ -1,0 +1,20 @@
+version: "3.7"
+
+services:
+
+  app_proxy:
+    environment:
+      APP_HOST: zht-miningcore-webui_web_1
+      APP_PORT: 8080
+
+  web:
+    image: theretromike/miningcorewebui
+    restart: on-failure
+    volumes:
+      - /home/umbrel/.miningcore:/app/miningcore
+    user: "1000:1000"
+    environment:
+      - POOL_NAME=ZHT Solo Mining Pool
+      - STRATUM_HOST=umbrel.local
+      - API_BASE_URL=http://zht-miningcore_server_1:4000/api
+      - PLATFORM=UMBREL

@@ -1,0 +1,28 @@
+manifestVersion: 1
+id: zht-miningcore
+name: MiningCore
+tagline: MiningCore Mining Pool App
+icon: https://raw.githubusercontent.com/oliverw/miningcore/master/logo.png
+category: SOLO Crypto Mining
+version: "1.4.0"
+port: 8560
+description: |
+  MiningCore Mining Pool App configured for BTC, BSV, and DGB solo mining.
+
+  Requires the ZHT BTC Node, BSV Node, and DGB Node apps to be installed and synced.
+  Also requires the Postgres app from the Retro Mike Community App Store.
+
+developer: ZHT
+website: ""
+submitter: ZHT
+submission: ""
+repo: https://hub.docker.com/r/theretromike/miningcore
+support: https://hub.docker.com/r/theretromike/miningcore
+gallery:
+  - https://raw.githubusercontent.com/oliverw/miningcore/master/logo.png
+releaseNotes: >-
+  2026.05.25 - Initial Release with BTC, BSV, and DGB pools
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""

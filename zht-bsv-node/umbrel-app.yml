@@ -1,0 +1,25 @@
+manifestVersion: 1
+id: zht-bsv-node
+name: Bitcoin SV (BSV) Node
+tagline: Bitcoin SV Node. A general node app for Bitcoin SV — use with mining pool software to solo mine, or run standalone to contribute to the Bitcoin SV network.
+icon: https://cryptologos.cc/logos/bitcoin-sv-bsv-logo.png
+category: Mining Nodes
+version: "1.0.0"
+port: 5010
+description: |
+  Bitcoin SV Node. A general node app for Bitcoin SV that can be used in conjunction with mining pool software to solo mine, or run standalone to contribute to the Bitcoin SV network.
+
+developer: ZHT
+website: ""
+submitter: ZHT
+submission: ""
+repo: https://github.com/bitcoin-sv/bitcoin-sv
+support: https://github.com/bitcoin-sv/bitcoin-sv
+gallery:
+  - https://cryptologos.cc/logos/bitcoin-sv-bsv-logo.png
+releaseNotes: >-
+  2026.05.25 - Initial Release
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""

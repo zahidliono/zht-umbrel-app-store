@@ -1,0 +1,25 @@
+manifestVersion: 1
+id: zht-btc-node
+name: Bitcoin (BTC) Node
+tagline: Bitcoin Node. A general node app for Bitcoin — use with mining pool software to solo mine, or run standalone to contribute to the Bitcoin network.
+icon: https://miningpoolstats.stream/ico/bitcoin.webp
+category: Mining Nodes
+version: "1.0.0"
+port: 5009
+description: |
+  Bitcoin Node. A general node app for Bitcoin that can be used in conjunction with mining pool software to solo mine, or run standalone to contribute to the Bitcoin network.
+
+developer: ZHT
+website: ""
+submitter: ZHT
+submission: ""
+repo: https://github.com/bitcoin/bitcoin
+support: https://github.com/bitcoin/bitcoin
+gallery:
+  - https://miningpoolstats.stream/ico/bitcoin.webp
+releaseNotes: >-
+  2026.05.25 - Initial Release
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""

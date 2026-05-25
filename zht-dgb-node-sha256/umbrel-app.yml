@@ -1,0 +1,25 @@
+manifestVersion: 1
+id: zht-dgb-node-sha256
+name: DigiByte (DGB) Node - SHA256
+tagline: DigiByte Node. SHA256 Algo. A general node app for DigiByte — use with mining pool software to solo mine, or run standalone to contribute to the DigiByte network.
+icon: https://github.com/DigiByte-Core/digibyte-logos/blob/master/Logos%20Bitmap/transparent%20bg/ClearBg%20DigiByte.png?raw=true
+category: Mining Nodes
+version: "1.0.0"
+port: 5006
+description: |
+  DigiByte Node. A general node app for DigiByte that runs against the SHA256 algo and can be used in conjunction with mining pool software to solo mine, or run standalone to contribute to the DigiByte network.
+
+developer: ZHT
+website: ""
+submitter: ZHT
+submission: ""
+repo: https://github.com/DigiByte-Core/digibyte
+support: https://github.com/DigiByte-Core/digibyte
+gallery:
+  - https://github.com/DigiByte-Core/digibyte-logos/blob/master/Logos%20Bitmap/transparent%20bg/ClearBg%20DigiByte.png?raw=true
+releaseNotes: >-
+  2026.05.25 - Initial Release
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""

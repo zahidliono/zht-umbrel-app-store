@@ -1,0 +1,41 @@
+manifestVersion: 1
+id: zht-miningcore-webui
+name: MiningCore Web UI
+tagline: Web UI for the ZHT MiningCore Mining Pool App
+icon: https://raw.githubusercontent.com/TheRetroMike/retromike-umbrel-app-store/master/retro-mike-miningcore-webui/webui.png
+category: SOLO Crypto Mining
+version: "2.8.0"
+port: 8559
+description: |
+  Web UI for the ZHT MiningCore Mining Pool App. Requires the ZHT MiningCore app to be installed.
+
+developer: ZHT
+website: ""
+submitter: ZHT
+submission: ""
+repo: https://hub.docker.com/r/theretromike/miningcorewebui
+support: https://hub.docker.com/r/theretromike/miningcorewebui
+gallery:
+  - https://raw.githubusercontent.com/TheRetroMike/retromike-umbrel-app-store/master/retro-mike-miningcore-webui/webui.png
+releaseNotes: >-
+  2026.05.25 - Initial Release
+widgets:
+  - id: "page1"
+    type: "list"
+    refresh: "5s"
+    endpoint: "web:8080/api/PoolStatsWidget/0"
+    link: ""
+    example:
+      type: "list"
+      link: ""
+      items:
+        - text: "Bitcoin | 1.2 TH/s | 1 Blocks"
+          subtext: "Last Synced Block: 01/12/2026 10:12:34"
+        - text: "Bitcoin SV | 0 H/s | 0 Blocks"
+          subtext: "Last Synced Block: INITIAL BLOCK SYNC"
+        - text: "DigiByte | 1.2 TH/s | 1 Blocks"
+          subtext: "Last Synced Block: 01/12/2026 10:12:34"
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
