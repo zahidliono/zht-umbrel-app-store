@@ -39,6 +39,7 @@ services:
             '  "logdir": "/tmp"' \
             '}' \
             > /data/bch/ckpool.conf
+          chmod 644 /data/bch/ckpool.conf
           chown 1000:1000 /data/bch/ckpool.conf
         fi
 
@@ -60,6 +61,7 @@ services:
             '  "logdir": "/tmp"' \
             '}' \
             > /data/bsv/ckpool.conf
+          chmod 644 /data/bsv/ckpool.conf
           chown 1000:1000 /data/bsv/ckpool.conf
         fi
 
@@ -81,6 +83,7 @@ services:
             '  "logdir": "/tmp"' \
             '}' \
             > /data/dgb/ckpool.conf
+          chmod 644 /data/dgb/ckpool.conf
           chown 1000:1000 /data/dgb/ckpool.conf
         fi
 
@@ -102,6 +105,7 @@ services:
             '  "logdir": "/tmp"' \
             '}' \
             > /data/fb/ckpool.conf
+          chmod 644 /data/fb/ckpool.conf
           chown 1000:1000 /data/fb/ckpool.conf
         fi
 
@@ -132,12 +136,12 @@ services:
           '</table>' \
           '</body></html>' \
           > /data/web/index.html
+        chmod 644 /data/web/index.html
         chown 1000:1000 /data/web/index.html
 
   ckpool-bch:
-    image: ghcr.io/zahidliono/zht-ckpool:latest
-    user: "1000:1000"
-    restart: on-failure
+    image: pdath/ckpool-solo:latest
+    restart: unless-stopped
     stop_grace_period: 30s
     depends_on:
       init:
@@ -147,13 +151,11 @@ services:
     ports:
       - "4567:3333/tcp"
     volumes:
-      - ${APP_DATA_DIR}/data/bch/ckpool.conf:/ckpool.conf:ro
-    command: ["-B", "-c", "/ckpool.conf"]
+      - ${APP_DATA_DIR}/data/bch/ckpool.conf:/etc/ckpool/ckpool.conf:ro
 
   ckpool-bsv:
-    image: ghcr.io/zahidliono/zht-ckpool:latest
-    user: "1000:1000"
-    restart: on-failure
+    image: pdath/ckpool-solo:latest
+    restart: unless-stopped
     stop_grace_period: 30s
     depends_on:
       init:
@@ -163,13 +165,11 @@ services:
     ports:
       - "4568:3333/tcp"
     volumes:
-      - ${APP_DATA_DIR}/data/bsv/ckpool.conf:/ckpool.conf:ro
-    command: ["-B", "-c", "/ckpool.conf"]
+      - ${APP_DATA_DIR}/data/bsv/ckpool.conf:/etc/ckpool/ckpool.conf:ro
 
   ckpool-dgb:
-    image: ghcr.io/zahidliono/zht-ckpool:latest
-    user: "1000:1000"
-    restart: on-failure
+    image: pdath/ckpool-solo:latest
+    restart: unless-stopped
     stop_grace_period: 30s
     depends_on:
       init:
@@ -179,13 +179,11 @@ services:
     ports:
       - "4569:3333/tcp"
     volumes:
-      - ${APP_DATA_DIR}/data/dgb/ckpool.conf:/ckpool.conf:ro
-    command: ["-B", "-c", "/ckpool.conf"]
+      - ${APP_DATA_DIR}/data/dgb/ckpool.conf:/etc/ckpool/ckpool.conf:ro
 
   ckpool-fb:
-    image: ghcr.io/zahidliono/zht-ckpool:latest
-    user: "1000:1000"
-    restart: on-failure
+    image: pdath/ckpool-solo:latest
+    restart: unless-stopped
     stop_grace_period: 30s
     depends_on:
       init:
@@ -195,8 +193,7 @@ services:
     ports:
       - "4570:3333/tcp"
     volumes:
-      - ${APP_DATA_DIR}/data/fb/ckpool.conf:/ckpool.conf:ro
-    command: ["-B", "-c", "/ckpool.conf"]
+      - ${APP_DATA_DIR}/data/fb/ckpool.conf:/etc/ckpool/ckpool.conf:ro
 
   web:
     image: nginx:alpine
