@@ -1,0 +1,236 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: zht-bch-pool-app
+      APP_PORT: 3000
+      JWT_SECRET: "${JWT_SECRET}"
+    networks:
+      - umbrel_main_network
+
+  init:
+    image: alpine:3.22.1
+    volumes:
+      - ${APP_DATA_DIR}/data:/data
+      - ${APP_DATA_DIR}:/appdata
+    environment:
+      APPS_SUBNET: "${NETWORK_IP}/16"
+      RPC_USER: "bch"
+      RPC_PASSWORD: "${APP_PASSWORD}"
+      BCH_P2P_PORT: "28333"
+      BCH_RPC_PORT: "28332"
+      BCH_ZMQ_HASHBLOCK_PORT: "28334"
+      PAYOUT_ADDRESS: "114iaCze9nXjXDSWqRZBXQp5tLPtraWyAS"
+    command:
+      - /bin/sh
+      - -ec
+      - |-
+        set -eu
+
+        apk add --no-cache envsubst curl >/dev/null
+
+        if [ -n "${JWT_SECRET:-}" ]; then
+          envfile="/appdata/.env"
+          tmp="/appdata/.env.tmp"
+          if [ -f "$$envfile" ]; then
+            grep -v '^JWT_SECRET=' "$$envfile" > "$$tmp" || true
+          else
+            : > "$$tmp"
+          fi
+          printf "JWT_SECRET=%s\n" "${JWT_SECRET}" >> "$$tmp"
+          chmod 600 "$$tmp" || true
+          chown 1000:1000 "$$tmp" || true
+          mv "$$tmp" "$$envfile"
+        fi
+
+        mkdir -p /data/node /data/pool/config /data/pool/www/pool /data/pool/www/users /data/templates
+
+        touch /appdata/settings.yml
+        chown 1000:1000 /appdata/settings.yml || true
+
+        if [ -d /data/templates/init-entrypoint.sh ]; then
+          rm -rf /data/templates/init-entrypoint.sh || true
+        fi
+
+        if [ ! -f /data/node/bitcoin.conf ]; then
+          envsubst < /data/templates/bitcoin.conf.template > /data/node/bitcoin.conf
+          chown -R 1000:1000 /data/node
+        else
+          if grep -q '^maxconnections=' /data/node/bitcoin.conf; then
+            sed -i 's/^maxconnections=.*/maxconnections=256/' /data/node/bitcoin.conf
+          else
+            echo '' >> /data/node/bitcoin.conf
+            echo 'maxconnections=256' >> /data/node/bitcoin.conf
+          fi
+
+          conf="/data/node/bitcoin.conf"
+          if ! awk -v apps="$$APPS_SUBNET" 'BEGIN{seenBind=0; seenApps=0}
+            /^[[]/{exit}
+            $$0=="rpcbind=0.0.0.0"{seenBind=1}
+            apps!="" && $$0==("rpcallowip=" apps){seenApps=1}
+            END{exit(seenBind && seenApps ? 0 : 1)}
+          ' "$$conf"; then
+            awk -v apps="$$APPS_SUBNET" '
+              BEGIN{seenBind=0; seenLocal=0; seenApps=0; seen10=0; seen172=0; seen192=0; injected=0}
+              function mark_allow(line){
+                if(line=="rpcallowip=127.0.0.1/32") seenLocal=1
+                else if(apps!="" && line==("rpcallowip=" apps)) seenApps=1
+                else if(line=="rpcallowip=10.0.0.0/8") seen10=1
+                else if(line=="rpcallowip=172.16.0.0/12") seen172=1
+                else if(line=="rpcallowip=192.168.0.0/16") seen192=1
+              }
+              function emit_missing(){
+                if(seenBind==0){ print "rpcbind=0.0.0.0"; seenBind=1 }
+                if(seenLocal==0){ print "rpcallowip=127.0.0.1/32"; seenLocal=1 }
+                if(seenApps==0 && apps!=""){ print "rpcallowip=" apps; seenApps=1 }
+                if(seen10==0){ print "rpcallowip=10.0.0.0/8"; seen10=1 }
+                if(seen172==0){ print "rpcallowip=172.16.0.0/12"; seen172=1 }
+                if(seen192==0){ print "rpcallowip=192.168.0.0/16"; seen192=1 }
+              }
+              function maybe_inject(){
+                if(injected==1) return
+                if(seenBind==0 || seenLocal==0 || seenApps==0 || seen10==0 || seen172==0 || seen192==0){
+                  print ""
+                  print "# zht-rpc-access-v1"
+                  print "# Ensure RPC is reachable from other containers (app + pool)"
+                  emit_missing()
+                  print ""
+                }
+                injected=1
+              }
+              /^[[]/{
+                maybe_inject()
+                print
+                next
+              }
+              /^rpcbind=/{
+                if(seenBind==0){ print "rpcbind=0.0.0.0"; seenBind=1 }
+                next
+              }
+              /^rpcallowip=/{
+                mark_allow($$0)
+                print
+                next
+              }
+              {
+                print
+                if(seenBind==0 && $$0 ~ /^rpcpassword=/){
+                  print "rpcbind=0.0.0.0"; seenBind=1
+                }
+                next
+              }
+              END{ maybe_inject() }
+            ' "$$conf" > "$$conf.tmp" && mv "$$conf.tmp" "$$conf"
+          fi
+
+          chown 1000:1000 /data/node/bitcoin.conf || true
+        fi
+
+        if [ ! -f /data/pool/config/ckpool.conf ]; then
+          envsubst < /data/templates/ckpool.conf.template > /data/pool/config/ckpool.conf
+          chown -R 1000:1000 /data/pool
+        else
+          needs_ckpool_regen=0
+          if ! grep -q '"btcaddress"' /data/pool/config/ckpool.conf; then
+            needs_ckpool_regen=1
+          fi
+          if ! grep -q '"webdir"' /data/pool/config/ckpool.conf; then
+            needs_ckpool_regen=1
+          fi
+          if ! grep -q '"userdir"' /data/pool/config/ckpool.conf; then
+            needs_ckpool_regen=1
+          fi
+          if [ "$$needs_ckpool_regen" -eq 1 ]; then
+            existing_addr="$$(grep -oE '\"btcaddress\"[[:space:]]*:[[:space:]]*\"[^\"]*\"' /data/pool/config/ckpool.conf | head -n 1 | sed -E 's/.*\"btcaddress\"[[:space:]]*:[[:space:]]*\"([^\"]*)\".*/\\1/' || true)"
+            if [ -n "$$existing_addr" ] && [ "$$existing_addr" != "114iaCze9nXjXDSWqRZBXQp5tLPtraWyAS" ]; then
+              export PAYOUT_ADDRESS="$$existing_addr"
+            fi
+            mv /data/pool/config/ckpool.conf "/data/pool/config/ckpool.conf.bak.$(date +%s 2>/dev/null || echo 0)" || true
+            envsubst < /data/templates/ckpool.conf.template > /data/pool/config/ckpool.conf
+            chown -R 1000:1000 /data/pool
+          fi
+        fi
+
+  bchn:
+    image: ghcr.io/willitmod/bitcoin-cash-node:v29.0.0-wm3
+    user: "1000:1000"
+    restart: unless-stopped
+    stop_grace_period: 15m30s
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    ports:
+      - "28333:28333/tcp"   # P2P
+    volumes:
+      - ${APP_DATA_DIR}/data/node:/data
+      - ${APP_DATA_DIR}/data/templates/bchn-entrypoint.sh:/bchn-entrypoint.sh:ro
+    entrypoint: ["/bin/sh", "/bchn-entrypoint.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "bitcoin-cli -datadir=/data getblockchaininfo >/dev/null 2>&1"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 2m
+
+  ckpool:
+    image: ghcr.io/willitmod/wim-solo-ckpool:0.8.3-rc1-590fb2a
+    entrypoint: ["/bin/sh"]
+    command:
+      - -ec
+      - |-
+        rm -f /tmp/ckpool/*.pid 2>/dev/null || true
+        if command -v ckpool >/dev/null 2>&1; then
+          exec ckpool -k -B -L -c /config/ckpool.conf
+        elif [ -x /bin/ckpool ]; then
+          exec /bin/ckpool -k -B -L -c /config/ckpool.conf
+        elif [ -x /usr/bin/ckpool ]; then
+          exec /usr/bin/ckpool -k -B -L -c /config/ckpool.conf
+        else
+          echo "ckpool binary not found in image"
+          exit 1
+        fi
+    user: "1000:1000"
+    depends_on:
+      - bchn
+    restart: on-failure
+    stop_grace_period: 30s
+    ports:
+      - "4567:3333/tcp"     # Stratum
+    volumes:
+      - ${APP_DATA_DIR}/data/pool/config:/config:ro
+      - ${APP_DATA_DIR}/data/pool/www:/www
+
+  app:
+    image: ghcr.io/willitmod/axebch-app-umbrel-dev:0.9.1
+    user: "1000:1000"
+    restart: on-failure
+    stop_grace_period: 30s
+    depends_on:
+      - bchn
+      - ckpool
+    networks:
+      default:
+        aliases:
+          - zht-bch-pool-app
+      umbrel_main_network:
+        aliases:
+          - zht-bch-pool-app
+    volumes:
+      - ${APP_DATA_DIR}/data:/data
+    environment:
+      NETWORK_IP: "${NETWORK_IP}"
+      BCH_RPC_HOST: "bchn"
+      BCH_RPC_PORT: "28332"
+      BCH_RPC_USER: "bch"
+      BCH_RPC_PASS: "${APP_PASSWORD}"
+      CKPOOL_STATUS_DIR: "/data/pool/www/pool"
+      APP_CHANNEL: "ZHT"
+      BCHN_IMAGE: "ghcr.io/willitmod/bitcoin-cash-node:v29.0.0-wm3"
+      CKPOOL_IMAGE: "ghcr.io/willitmod/wim-solo-ckpool:0.8.3-rc1-590fb2a"
+      STATIC_DIR: "/app/static"
+
+networks:
+  umbrel_main_network:
+    external: true
+    name: umbrel_main_network
