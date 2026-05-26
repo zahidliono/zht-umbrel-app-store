@@ -4,19 +4,23 @@ category: Mining Nodes
 name: ZHT MiningCore Pool
 version: "1.0.0"
 port: 5022
-tagline: BCH and BSV pool mining with full share tracking and statistics
+tagline: BCH, BSV, DGB and FB solo pool mining with full share tracking and statistics
 description: >-
-  Full-featured mining pool powered by MiningCore. Connects to your ZHT BCH and BSV node apps and serves Stratum v1 to your ASIC miners with per-worker hashrate tracking, share accounting, and block reward management.
+  Full-featured mining pool powered by MiningCore. Connects to your ZHT BCH, BSV, DGB and FB node apps and serves Stratum v1 to your ASIC miners with per-worker hashrate tracking, share accounting, and block reward management.
 
 
   Requires the following ZHT node apps to be installed:
     - Bitcoin Cash (BCH) Node
     - Bitcoin SV (BSV) Node
+    - DigiByte (DGB) Node
+    - Fractal Bitcoin (FB) Node
 
 
   ASIC Stratum Ports:
     - BCH → stratum+tcp://<umbrel-ip>:4577
     - BSV → stratum+tcp://<umbrel-ip>:4578
+    - DGB → stratum+tcp://<umbrel-ip>:4580
+    - FB  → stratum+tcp://<umbrel-ip>:4581
 
 
   Worker format: address.workername (e.g. 1abc...xyz.rig1)
