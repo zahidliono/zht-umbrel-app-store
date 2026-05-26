@@ -2,23 +2,27 @@ manifestVersion: 1
 id: zht-miningcore
 category: Mining Nodes
 name: ZHT MiningCore Pool
-version: "1.0.0"
+version: "1.1.0"
 port: 5022
 tagline: BCH, BSV and DGB solo pool mining with full share tracking and statistics
 description: >-
-  Full-featured mining pool powered by MiningCore. Connects to your ZHT BCH, BSV and DGB node apps and serves Stratum v1 to your ASIC miners with per-worker hashrate tracking, share accounting, and block reward management.
+  Full-featured mining pool powered by MiningCore. Connects to your ZHT node apps and serves Stratum v1 to your ASIC miners with per-worker hashrate tracking, share accounting, and block reward management.
 
 
   Requires the following ZHT node apps to be installed:
     - Bitcoin Cash (BCH) Node
     - Bitcoin SV (BSV) Node
     - DigiByte (DGB) Node
+    - Bitcoin II (BC2) Node
+    - Bitcoin Cash II (BCH2) Node
 
 
   ASIC Stratum Ports:
-    - BCH → stratum+tcp://<umbrel-ip>:4577
-    - BSV → stratum+tcp://<umbrel-ip>:4578
-    - DGB → stratum+tcp://<umbrel-ip>:4580
+    - BCH  → stratum+tcp://<umbrel-ip>:4577
+    - BSV  → stratum+tcp://<umbrel-ip>:4578
+    - DGB  → stratum+tcp://<umbrel-ip>:4580
+    - BC2  → stratum+tcp://<umbrel-ip>:4581
+    - BCH2 → stratum+tcp://<umbrel-ip>:4582
 
 
   Worker format: address.workername (e.g. 1abc...xyz.rig1)
@@ -51,5 +55,5 @@ path: ""
 defaultUsername: ""
 defaultPassword: ""
 releaseNotes: >-
-  1.0.0 - BCH, BSV and DGB solo pool mining via MiningCore with PostgreSQL backend.
-  Stratum ports: BCH 4577 · BSV 4578 · DGB 4580. API on port 4579.
+  1.1.0 - Added BC2 (Bitcoin II) pool on port 4581 and BCH2 (Bitcoin Cash II) pool on port 4582.
+  BCH 4577 · BSV 4578 · DGB 4580 · BC2 4581 · BCH2 4582. API on port 4579.
