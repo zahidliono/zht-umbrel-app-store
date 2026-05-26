@@ -81,6 +81,7 @@ services:
     ports:
       - "4577:3333/tcp"
       - "4578:3334/tcp"
+      - "4579:4000/tcp"
     volumes:
       - ${APP_DATA_DIR}/data/config.json:/app/config.json:ro
     networks:
