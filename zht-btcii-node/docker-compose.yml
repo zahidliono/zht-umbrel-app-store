@@ -25,4 +25,4 @@ services:
       - 9009:9009    # RPC
       - 7009:7009    # ZMQ
       - 8339:8339    # P2P
-    entrypoint: "bitcoind -printtoconsole -server -prune=550 -zmqpubhashblock=tcp://127.0.0.1:7009 -rpcbind=0.0.0.0 -rpcport=9009 -rpcallowip=0.0.0.0/0 -port=8339 -rpcuser=zahidliono -rpcpassword=Idd=9108 -maxtipage=504576000"
+    entrypoint: "bitcoinIId -printtoconsole -server -prune=550 -zmqpubhashblock=tcp://127.0.0.1:7009 -rpcbind=0.0.0.0 -rpcport=9009 -rpcallowip=0.0.0.0/0 -port=8339 -rpcuser=zahidliono -rpcpassword=Idd=9108 -maxtipage=504576000"
