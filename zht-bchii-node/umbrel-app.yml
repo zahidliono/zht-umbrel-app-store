@@ -1,0 +1,34 @@
+manifestVersion: 1
+id: zht-bchii-node
+name: Bitcoin Cash II (BCH2) Node
+tagline: Full Bitcoin Cash II node — solo mine or contribute to the BCH2 network.
+icon: https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+category: Mining Nodes
+version: "1.0.0"
+port: 5026
+description: |
+  Full Bitcoin Cash II (BCH2) node powered by BitcoinCashII-Core.
+
+  Bitcoin Cash II is a re-launch of the Bitcoin Cash protocol. This node connects to the BCH2 peer-to-peer network, downloads and fully validates the blockchain, and exposes an RPC interface for mining pool software.
+
+  Use with ZHT MiningCore Pool or ZHT Solo Pool to solo mine BCH2 with your ASIC.
+
+  RPC Port: 9010
+  P2P Port: 8340
+
+  Stratum mining support requires ZHT MiningCore Pool (add BCH2 pool) or ZHT Solo Pool.
+
+developer: ZHT
+website: ""
+submitter: ZHT
+submission: ""
+repo: ""
+support: ""
+gallery:
+  - https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+releaseNotes: >-
+  1.0.0 - Initial release. BitcoinCashII-Core full node. RPC on port 9010, P2P on 8340.
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
