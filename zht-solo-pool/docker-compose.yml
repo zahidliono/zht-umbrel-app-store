@@ -140,8 +140,9 @@ services:
         chown 1000:1000 /data/web/index.html
 
   ckpool-bch:
-    image: pdath/ckpool-solo:latest
-    restart: unless-stopped
+    image: ghcr.io/zahidliono/zht-ckpool:latest
+    user: "1000:1000"
+    restart: on-failure
     stop_grace_period: 30s
     depends_on:
       init:
@@ -151,11 +152,13 @@ services:
     ports:
       - "4567:3333/tcp"
     volumes:
-      - ${APP_DATA_DIR}/data/bch/ckpool.conf:/etc/ckpool/ckpool.conf:ro
+      - ${APP_DATA_DIR}/data/bch/ckpool.conf:/ckpool.conf:ro
+    command: ["-B", "-c", "/ckpool.conf"]
 
   ckpool-bsv:
-    image: pdath/ckpool-solo:latest
-    restart: unless-stopped
+    image: ghcr.io/zahidliono/zht-ckpool:latest
+    user: "1000:1000"
+    restart: on-failure
     stop_grace_period: 30s
     depends_on:
       init:
@@ -165,11 +168,13 @@ services:
     ports:
       - "4568:3333/tcp"
     volumes:
-      - ${APP_DATA_DIR}/data/bsv/ckpool.conf:/etc/ckpool/ckpool.conf:ro
+      - ${APP_DATA_DIR}/data/bsv/ckpool.conf:/ckpool.conf:ro
+    command: ["-B", "-c", "/ckpool.conf"]
 
   ckpool-dgb:
-    image: pdath/ckpool-solo:latest
-    restart: unless-stopped
+    image: ghcr.io/zahidliono/zht-ckpool:latest
+    user: "1000:1000"
+    restart: on-failure
     stop_grace_period: 30s
     depends_on:
       init:
@@ -179,11 +184,13 @@ services:
     ports:
       - "4569:3333/tcp"
     volumes:
-      - ${APP_DATA_DIR}/data/dgb/ckpool.conf:/etc/ckpool/ckpool.conf:ro
+      - ${APP_DATA_DIR}/data/dgb/ckpool.conf:/ckpool.conf:ro
+    command: ["-B", "-c", "/ckpool.conf"]
 
   ckpool-fb:
-    image: pdath/ckpool-solo:latest
-    restart: unless-stopped
+    image: ghcr.io/zahidliono/zht-ckpool:latest
+    user: "1000:1000"
+    restart: on-failure
     stop_grace_period: 30s
     depends_on:
       init:
@@ -193,7 +200,8 @@ services:
     ports:
       - "4570:3333/tcp"
     volumes:
-      - ${APP_DATA_DIR}/data/fb/ckpool.conf:/etc/ckpool/ckpool.conf:ro
+      - ${APP_DATA_DIR}/data/fb/ckpool.conf:/ckpool.conf:ro
+    command: ["-B", "-c", "/ckpool.conf"]
 
   web:
     image: nginx:alpine
