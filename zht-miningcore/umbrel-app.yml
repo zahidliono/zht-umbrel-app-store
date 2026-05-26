@@ -1,0 +1,52 @@
+manifestVersion: 1
+id: zht-miningcore
+category: Mining Nodes
+name: ZHT MiningCore Pool
+version: "1.0.0"
+port: 5022
+tagline: BCH and BSV pool mining with full share tracking and statistics
+description: >-
+  Full-featured mining pool powered by MiningCore. Connects to your ZHT BCH and BSV node apps and serves Stratum v1 to your ASIC miners with per-worker hashrate tracking, share accounting, and block reward management.
+
+
+  Requires the following ZHT node apps to be installed:
+    - Bitcoin Cash (BCH) Node
+    - Bitcoin SV (BSV) Node
+
+
+  ASIC Stratum Ports:
+    - BCH → stratum+tcp://<umbrel-ip>:4577
+    - BSV → stratum+tcp://<umbrel-ip>:4578
+
+
+  Worker format: address.workername (e.g. 1abc...xyz.rig1)
+  Password: x (anything works)
+
+
+  All block rewards go directly to the configured payout addresses.
+  Install ZHT MiningCore Dashboard for a live stats web UI.
+
+
+  ⚠️ Requires x86_64 (amd64) Umbrel — not compatible with Raspberry Pi (arm64).
+
+
+  Powered by MiningCore (MIT): https://github.com/oliverw/miningcore
+  Image: theretromike/miningcore
+
+
+  © 2026 ZHT. All rights reserved.
+
+developer: ZHT
+website: https://github.com/zahidliono/zht-umbrel-app-store
+repo: https://github.com/zahidliono/zht-umbrel-app-store
+support: https://github.com/zahidliono/zht-umbrel-app-store
+submitter: ZHT
+dependencies: []
+icon: https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+gallery:
+  - https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+releaseNotes: >-
+  1.0.0 - Initial release. BCH and BSV pool mining via MiningCore with PostgreSQL backend.

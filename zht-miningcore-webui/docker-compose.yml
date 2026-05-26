@@ -1,0 +1,217 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: zht-miningcore-webui-web
+      APP_PORT: 80
+      JWT_SECRET: "${JWT_SECRET}"
+    networks:
+      - umbrel_main_network
+
+  init:
+    image: alpine:3.22.1
+    volumes:
+      - ${APP_DATA_DIR}/data:/data
+    command:
+      - /bin/sh
+      - -ec
+      - |-
+        set -eu
+        mkdir -p /data/html /data/conf
+
+        # nginx reverse-proxy config: /mc-api/ proxied to MiningCore API
+        cat > /data/conf/default.conf << 'NGINXEOF'
+server {
+    listen 80;
+    root /usr/share/nginx/html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+
+    location /mc-api/ {
+        proxy_pass http://zht-miningcore-api:4000/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_read_timeout 10s;
+    }
+}
+NGINXEOF
+
+        cat > /data/html/index.html << 'HTMLEOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZHT MiningCore Dashboard</title>
+<style>
+  *{box-sizing:border-box}
+  body{font-family:monospace;background:#0d1117;color:#e6edf3;padding:1.5rem;max-width:960px;margin:0 auto}
+  h1{color:#f78166;margin-bottom:.2rem;font-size:1.4rem}
+  .subtitle{color:#8b949e;margin-top:0;margin-bottom:1.5rem;font-size:.9rem}
+  .refresh{color:#8b949e;font-size:.8rem;margin-bottom:1.5rem}
+  .pool-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:1.2rem;margin-bottom:1.2rem}
+  .pool-header{display:flex;align-items:center;margin-bottom:1rem;gap:.8rem}
+  .pool-name{font-size:1.1rem;font-weight:bold;color:#e6edf3}
+  .badge{background:#21262d;color:#8b949e;font-size:.75rem;padding:.2rem .5rem;border-radius:4px}
+  .badge.ok{background:#1a3a1a;color:#56d364}
+  .stats{display:flex;flex-wrap:wrap;gap:1.2rem;margin-bottom:.8rem}
+  .stat{min-width:120px}
+  .stat-label{color:#8b949e;font-size:.8rem;margin-bottom:.2rem}
+  .stat-value{color:#58a6ff;font-size:1.05rem;font-weight:bold}
+  h3{color:#8b949e;font-size:.85rem;margin:1rem 0 .4rem;text-transform:uppercase;letter-spacing:.05em}
+  table{width:100%;border-collapse:collapse}
+  th{background:#0d1117;color:#8b949e;padding:.4rem .8rem;text-align:left;font-size:.8rem;font-weight:normal}
+  td{border-top:1px solid #21262d;padding:.45rem .8rem;font-size:.9rem}
+  .confirmed{color:#56d364}
+  .pending{color:#d29922}
+  .orphaned{color:#f85149}
+  .error{background:#1a0f0f;border:1px solid #f8514933;border-radius:6px;padding:1rem;color:#f85149;margin-bottom:1rem}
+  .empty{color:#8b949e;font-size:.9rem;padding:.4rem 0}
+</style>
+</head>
+<body>
+<h1>ZHT MiningCore Dashboard</h1>
+<p class="subtitle">BCH &amp; BSV pool stats — powered by MiningCore</p>
+<div class="refresh" id="status">Loading...</div>
+<div id="error-box"></div>
+<div id="pools"></div>
+
+<script>
+const API = '/mc-api/api';
+
+const H = (n, d=2) => {
+  if (n == null) return '—';
+  const U = ['H','KH','MH','GH','TH','PH','EH'];
+  let i = 0;
+  while (n >= 1000 && i < U.length-1) { n /= 1000; i++; }
+  return n.toFixed(d) + ' ' + U[i] + '/s';
+};
+const N = n => (n == null ? '—' : Number(n).toLocaleString());
+const T = s => s ? new Date(s).toLocaleTimeString() : '—';
+const DT = s => s ? new Date(s).toLocaleString() : '—';
+const D = n => {
+  if (n == null) return '—';
+  if (n >= 1e12) return (n/1e12).toFixed(2) + 'T';
+  if (n >= 1e9) return (n/1e9).toFixed(2) + 'G';
+  if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(2) + 'K';
+  return n.toFixed(2);
+};
+
+async function api(path) {
+  const r = await fetch(API + path);
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+function renderPool(pool, miners, blocks) {
+  const ps = pool.poolStats || {};
+  const ns = pool.networkStats || {};
+  const sym = pool.coin?.symbol || pool.id.toUpperCase();
+  const name = pool.coin?.name || pool.id;
+
+  const minersHtml = miners.length
+    ? `<h3>Connected Workers (${miners.length})</h3>
+       <table>
+         <tr><th>Worker</th><th>Hashrate</th><th>Shares/s</th><th>Last Seen</th></tr>
+         ${miners.map(m => `<tr>
+           <td style="color:#e6edf3">${m.miner || '—'}</td>
+           <td>${H(m.hashrate)}</td>
+           <td>${m.sharesPerSecond != null ? m.sharesPerSecond.toFixed(2) : '—'}</td>
+           <td style="color:#8b949e">${T(m.lastActivity)}</td>
+         </tr>`).join('')}
+       </table>`
+    : `<h3>Connected Workers</h3><p class="empty">No workers connected — point your ASIC to the stratum port.</p>`;
+
+  const blocksHtml = blocks.length
+    ? `<h3>Recent Blocks</h3>
+       <table>
+         <tr><th>Height</th><th>Reward (${sym})</th><th>Effort</th><th>Status</th><th>Found</th></tr>
+         ${blocks.map(b => `<tr>
+           <td>${N(b.blockHeight)}</td>
+           <td>${b.reward != null ? b.reward.toFixed(8) : '—'}</td>
+           <td>${b.effort != null ? (b.effort * 100).toFixed(1) + '%' : '—'}</td>
+           <td class="${b.status}">${b.status || '—'}</td>
+           <td style="color:#8b949e">${DT(b.created)}</td>
+         </tr>`).join('')}
+       </table>`
+    : `<h3>Recent Blocks</h3><p class="empty">No blocks found yet — keep hashing!</p>`;
+
+  return `<div class="pool-card">
+    <div class="pool-header">
+      <span class="pool-name">${name} (${sym})</span>
+      <span class="badge ok">ONLINE</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Pool Hashrate</div><div class="stat-value">${H(ps.poolHashrate)}</div></div>
+      <div class="stat"><div class="stat-label">Workers</div><div class="stat-value">${N(ps.connectedMiners)}</div></div>
+      <div class="stat"><div class="stat-label">Blocks Found</div><div class="stat-value">${N(pool.totalBlocks)}</div></div>
+      <div class="stat"><div class="stat-label">Net Hashrate</div><div class="stat-value">${H(ns.networkHashrate)}</div></div>
+      <div class="stat"><div class="stat-label">Net Difficulty</div><div class="stat-value">${D(ns.networkDifficulty)}</div></div>
+    </div>
+    ${minersHtml}
+    ${blocksHtml}
+  </div>`;
+}
+
+async function refresh() {
+  const eb = document.getElementById('error-box');
+  const pc = document.getElementById('pools');
+  const st = document.getElementById('status');
+  try {
+    const { pools } = await api('/pools');
+    if (!pools || pools.length === 0) {
+      pc.innerHTML = '<p style="color:#8b949e">No pools found. Check ZHT MiningCore Pool is running.</p>';
+      return;
+    }
+    eb.innerHTML = '';
+    const cards = await Promise.all(pools.map(async p => {
+      const [mRes, bRes] = await Promise.allSettled([
+        api(`/pools/${p.id}/miners?page=0&pageSize=20`),
+        api(`/pools/${p.id}/blocks?page=0&pageSize=5`)
+      ]);
+      const miners = mRes.status === 'fulfilled' ? (mRes.value.miners || []) : [];
+      const blocks = bRes.status === 'fulfilled' ? (bRes.value.blocks || []) : [];
+      return renderPool(p, miners, blocks);
+    }));
+    pc.innerHTML = cards.join('');
+    st.textContent = 'Updated: ' + new Date().toLocaleTimeString() + ' · auto-refresh every 30s';
+  } catch (e) {
+    eb.innerHTML = `<div class="error">Cannot reach MiningCore API — is ZHT MiningCore Pool installed and running?<br><small>${e.message}</small></div>`;
+    st.textContent = 'Connection failed — retrying in 30s';
+  }
+}
+
+refresh();
+setInterval(refresh, 30000);
+</script>
+</body>
+</html>
+HTMLEOF
+
+        chmod 644 /data/conf/default.conf /data/html/index.html
+
+  web:
+    image: nginx:alpine
+    restart: on-failure
+    stop_grace_period: 10s
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    networks:
+      default: {}
+      umbrel_main_network:
+        aliases:
+          - zht-miningcore-webui-web
+    volumes:
+      - ${APP_DATA_DIR}/data/html:/usr/share/nginx/html:ro
+      - ${APP_DATA_DIR}/data/conf:/etc/nginx/conf.d:ro
+
+networks:
+  umbrel_main_network:
+    external: true
+    name: umbrel_main_network

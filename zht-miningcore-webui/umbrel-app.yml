@@ -1,0 +1,42 @@
+manifestVersion: 1
+id: zht-miningcore-webui
+category: Mining Nodes
+name: ZHT MiningCore Dashboard
+version: "1.0.0"
+port: 5023
+tagline: Live hashrate, worker stats and block history for ZHT MiningCore Pool
+description: >-
+  Web dashboard for the ZHT MiningCore Pool app. Shows real-time hashrate, connected workers, share accounting, and found block history for your BCH and BSV pools.
+
+
+  Requires ZHT MiningCore Pool to be installed and running first.
+
+
+  Features:
+    - Live pool hashrate per coin
+    - Per-worker hashrate and share rate
+    - Network difficulty and estimated hashrate
+    - Found blocks with confirmation status
+    - Auto-refreshes every 30 seconds
+
+
+  ⚠️ Requires x86_64 (amd64) Umbrel — not compatible with Raspberry Pi (arm64).
+
+
+  © 2026 ZHT. All rights reserved.
+
+developer: ZHT
+website: https://github.com/zahidliono/zht-umbrel-app-store
+repo: https://github.com/zahidliono/zht-umbrel-app-store
+support: https://github.com/zahidliono/zht-umbrel-app-store
+submitter: ZHT
+dependencies:
+  - zht-miningcore
+icon: https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+gallery:
+  - https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+releaseNotes: >-
+  1.0.0 - Initial release. Live MiningCore dashboard for BCH and BSV pools.

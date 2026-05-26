@@ -1,0 +1,241 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: zht-miningcore-web
+      APP_PORT: 80
+      JWT_SECRET: "${JWT_SECRET}"
+    networks:
+      - umbrel_main_network
+
+  init:
+    image: alpine:3.22.1
+    volumes:
+      - ${APP_DATA_DIR}/data:/data
+    command:
+      - /bin/sh
+      - -ec
+      - |-
+        set -eu
+        mkdir -p /data/info
+
+        if [ ! -f /data/config.json ]; then
+          cat > /data/config.json << 'JSONEOF'
+{
+  "logging": {
+    "level": "info",
+    "enableConsoleLog": true,
+    "enableConsoleColors": false
+  },
+  "banning": {
+    "manager": "Integrated",
+    "banOnJunkReceive": true,
+    "banOnInvalidShares": false
+  },
+  "notifications": {},
+  "api": {
+    "enabled": true,
+    "listenAddress": "*",
+    "port": 4000,
+    "rateLimiting": {
+      "disabled": true
+    }
+  },
+  "persistence": {
+    "postgres": {
+      "host": "postgres",
+      "port": 5432,
+      "user": "miningcore",
+      "password": "miningcore",
+      "database": "miningcore"
+    }
+  },
+  "paymentProcessing": {
+    "enabled": true,
+    "interval": 60,
+    "shareRecoveryFile": "/data/recovered-shares.txt"
+  },
+  "pools": [
+    {
+      "id": "bch",
+      "enabled": true,
+      "coin": "bitcoin-cash",
+      "address": "114iaCze9nXjXDSWqRZBXQp5tLPtraWyAS",
+      "rewardRecipients": [
+        {
+          "address": "114iaCze9nXjXDSWqRZBXQp5tLPtraWyAS",
+          "percentage": 100
+        }
+      ],
+      "blockRefreshInterval": 500,
+      "jobRebroadcastTimeout": 55,
+      "clientConnectionTimeout": 30,
+      "banning": {
+        "enabled": false
+      },
+      "ports": {
+        "3333": {
+          "listenAddress": "0.0.0.0",
+          "difficulty": 128,
+          "name": "ASIC",
+          "varDiff": {
+            "minDiff": 64,
+            "targetTime": 15,
+            "retargetTime": 90,
+            "variancePercent": 30
+          }
+        }
+      },
+      "daemons": [
+        {
+          "host": "umbrel-host",
+          "port": 9002,
+          "user": "zahidliono",
+          "password": "Idd=9108"
+        }
+      ],
+      "paymentProcessing": {
+        "enabled": true,
+        "minimumPayment": 0,
+        "payoutScheme": "SOLO"
+      }
+    },
+    {
+      "id": "bsv",
+      "enabled": true,
+      "coin": "bitcoin-sv",
+      "address": "15h2EzxbiKxtTxHQB5NbXK3MmiZfrPLRx5",
+      "rewardRecipients": [
+        {
+          "address": "15h2EzxbiKxtTxHQB5NbXK3MmiZfrPLRx5",
+          "percentage": 100
+        }
+      ],
+      "blockRefreshInterval": 500,
+      "jobRebroadcastTimeout": 55,
+      "clientConnectionTimeout": 30,
+      "banning": {
+        "enabled": false
+      },
+      "ports": {
+        "3334": {
+          "listenAddress": "0.0.0.0",
+          "difficulty": 128,
+          "name": "ASIC",
+          "varDiff": {
+            "minDiff": 64,
+            "targetTime": 15,
+            "retargetTime": 90,
+            "variancePercent": 30
+          }
+        }
+      },
+      "daemons": [
+        {
+          "host": "umbrel-host",
+          "port": 9005,
+          "user": "zahidliono",
+          "password": "Idd=9108"
+        }
+      ],
+      "paymentProcessing": {
+        "enabled": true,
+        "minimumPayment": 0,
+        "payoutScheme": "SOLO"
+      }
+    }
+  ]
+}
+JSONEOF
+          chown 1000:1000 /data/config.json
+          chmod 644 /data/config.json
+        fi
+
+        printf '%s\n' \
+          '<!DOCTYPE html>' \
+          '<html lang="en"><head><meta charset="utf-8">' \
+          '<title>ZHT MiningCore Pool</title>' \
+          '<style>' \
+          'body{font-family:monospace;background:#0d1117;color:#e6edf3;padding:2rem;max-width:720px;margin:0 auto}' \
+          'h1{color:#f78166;margin-bottom:.25rem}' \
+          'p{color:#8b949e;margin-top:0}' \
+          'table{border-collapse:collapse;width:100%;margin-top:1.5rem}' \
+          'th{background:#161b22;color:#8b949e;padding:.6rem 1rem;text-align:left;font-weight:normal}' \
+          'td{border-top:1px solid #21262d;padding:.6rem 1rem}' \
+          '.coin{font-weight:bold;color:#e6edf3}' \
+          '.url{color:#58a6ff}' \
+          '.dim{color:#8b949e}' \
+          '.note{margin-top:1.5rem;padding:1rem;background:#161b22;border-left:3px solid #f78166;color:#8b949e;font-size:.9rem}' \
+          '</style></head>' \
+          '<body>' \
+          '<h1>ZHT MiningCore Pool</h1>' \
+          '<p>Point your ASIC at <b>umbrel.local</b> (or your Umbrel IP) on the stratum port for each coin.</p>' \
+          '<table>' \
+          '<tr><th>Coin</th><th>Stratum URL</th><th>Worker</th><th>Password</th></tr>' \
+          '<tr><td class="coin">BCH</td><td class="url">stratum+tcp://umbrel.local:4577</td><td class="dim">address.worker1</td><td class="dim">x</td></tr>' \
+          '<tr><td class="coin">BSV</td><td class="url">stratum+tcp://umbrel.local:4578</td><td class="dim">address.worker1</td><td class="dim">x</td></tr>' \
+          '</table>' \
+          '<div class="note">Install <b>ZHT MiningCore Dashboard</b> app for live hashrate, worker stats, and block history.</div>' \
+          '</body></html>' \
+          > /data/info/index.html
+        chown 1000:1000 /data/info/index.html
+
+  postgres:
+    image: postgres:16-alpine
+    restart: on-failure
+    stop_grace_period: 30s
+    environment:
+      POSTGRES_USER: miningcore
+      POSTGRES_PASSWORD: miningcore
+      POSTGRES_DB: miningcore
+    volumes:
+      - ${APP_DATA_DIR}/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U miningcore"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  miningcore:
+    image: theretromike/miningcore:umbrel
+    restart: unless-stopped
+    stop_grace_period: 30s
+    user: "1000:1000"
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+    extra_hosts:
+      - "umbrel-host:host-gateway"
+    ports:
+      - "4577:3333/tcp"
+      - "4578:3334/tcp"
+    volumes:
+      - ${APP_DATA_DIR}/data/config.json:/app/config.json:ro
+    networks:
+      default: {}
+      umbrel_main_network:
+        aliases:
+          - zht-miningcore-api
+
+  web:
+    image: nginx:alpine
+    restart: on-failure
+    stop_grace_period: 10s
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    networks:
+      default: {}
+      umbrel_main_network:
+        aliases:
+          - zht-miningcore-web
+    volumes:
+      - ${APP_DATA_DIR}/data/info:/usr/share/nginx/html:ro
+
+networks:
+  umbrel_main_network:
+    external: true
+    name: umbrel_main_network
