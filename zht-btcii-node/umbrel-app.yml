@@ -1,0 +1,34 @@
+manifestVersion: 1
+id: zht-btcii-node
+name: Bitcoin II (BC2) Node
+tagline: Full Bitcoin II node — re-launched Bitcoin, solo mine or contribute to the BC2 network.
+icon: https://raw.githubusercontent.com/Bitcoin-II/ForThirdParties/main/BitcoinII-BC2-logo-200X200.png
+category: Mining Nodes
+version: "29.1.0"
+port: 5025
+description: |
+  Full Bitcoin II (BC2) node powered by BitcoinII-Core v29.1.0.
+
+  Bitcoin II is a re-launch of the original Bitcoin protocol. This node connects to the BC2 peer-to-peer network, downloads and fully validates the blockchain, and exposes an RPC interface for mining pool software.
+
+  Use with ZHT MiningCore Pool or ZHT Solo Pool to solo mine BC2 with your ASIC.
+
+  RPC Port: 9009
+  P2P Port: 8339
+
+  Stratum mining support requires ZHT MiningCore Pool (add BC2 pool) or ZHT Solo Pool.
+
+developer: ZHT
+website: https://bitcoin-ii.org
+submitter: ZHT
+submission: ""
+repo: https://github.com/Bitcoin-II/BitcoinII-Core
+support: https://github.com/Bitcoin-II/BitcoinII-Core
+gallery:
+  - https://raw.githubusercontent.com/Bitcoin-II/ForThirdParties/main/BitcoinII-BC2-logo-200X200.png
+releaseNotes: >-
+  1.0.0 - Initial release. BitcoinII-Core v29.1.0 full node. RPC on port 9009, P2P on 8339.
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
