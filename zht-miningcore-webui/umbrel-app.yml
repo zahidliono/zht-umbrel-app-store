@@ -4,12 +4,18 @@ category: Mining Nodes
 name: ZHT MiningCore Dashboard
 version: "1.0.0"
 port: 5023
-tagline: Live hashrate, worker stats and block history for ZHT MiningCore Pool
+tagline: Live hashrate, worker stats and block history for BCH, BSV and DGB pools
 description: >-
-  Web dashboard for the ZHT MiningCore Pool app. Shows real-time hashrate, connected workers, share accounting, and found block history for your BCH and BSV pools.
+  Web dashboard for the ZHT MiningCore Pool app. Shows real-time hashrate, connected workers, share accounting, and found block history for your BCH, BSV and DGB pools.
 
 
   Requires ZHT MiningCore Pool to be installed and running first.
+
+
+  Pools monitored:
+    - Bitcoin Cash (BCH) — stratum port 4577
+    - Bitcoin SV (BSV) — stratum port 4578
+    - DigiByte SHA256 (DGB) — stratum port 4580
 
 
   Features:
@@ -39,4 +45,4 @@ path: ""
 defaultUsername: ""
 defaultPassword: ""
 releaseNotes: >-
-  1.0.0 - Initial release. Live MiningCore dashboard for BCH and BSV pools.
+  1.0.0 - Live MiningCore dashboard for BCH (port 4577), BSV (port 4578) and DGB (port 4580) pools.

@@ -51,4 +51,5 @@ path: ""
 defaultUsername: ""
 defaultPassword: ""
 releaseNotes: >-
-  1.0.0 - Initial release. BCH and BSV pool mining via MiningCore with PostgreSQL backend.
+  1.0.0 - BCH, BSV and DGB solo pool mining via MiningCore with PostgreSQL backend.
+  Stratum ports: BCH 4577 · BSV 4578 · DGB 4580. API on port 4579.
