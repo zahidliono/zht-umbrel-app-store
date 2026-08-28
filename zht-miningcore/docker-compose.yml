@@ -40,11 +40,11 @@ services:
           '<p>Connect your ASIC to <b>umbrel.local</b> on the stratum port for each coin.</p>' \
           '<table>' \
           '<tr><th>Coin</th><th>Stratum URL</th><th>Worker</th><th>Password</th></tr>' \
-          '<tr><td class="coin">BCH</td><td class="url">stratum+tcp://umbrel.local:4577</td><td class="dim">address.worker1</td><td class="dim">x</td></tr>' \
-          '<tr><td class="coin">BSV</td><td class="url">stratum+tcp://umbrel.local:4578</td><td class="dim">address.worker1</td><td class="dim">x</td></tr>' \
-          '<tr><td class="coin">DGB</td><td class="url">stratum+tcp://umbrel.local:4580</td><td class="dim">address.worker1</td><td class="dim">x</td></tr>' \
-          '<tr><td class="coin">BC2</td><td class="url">stratum+tcp://umbrel.local:4581</td><td class="dim">address.worker1</td><td class="dim">x</td></tr>' \
-          '<tr><td class="coin">BCH2</td><td class="url">stratum+tcp://umbrel.local:4582</td><td class="dim">address.worker1</td><td class="dim">x</td></tr>' \
+          '<tr><td class="coin">BCH</td><td class="url">stratum+tcp://umbrel.local:4577</td><td class="dim">1Pr63D9axkfrPJ2aU37Zyw16pY6PDcSAk3.rig1</td><td class="dim">x</td></tr>' \
+          '<tr><td class="coin">BSV</td><td class="url">stratum+tcp://umbrel.local:4578</td><td class="dim">15h2EzxbiKxtTxHQB5NbXK3MmiZfrPLRx5.rig1</td><td class="dim">x</td></tr>' \
+          '<tr><td class="coin">DGB</td><td class="url">stratum+tcp://umbrel.local:4580</td><td class="dim">DSirDMVw89VweK3jPsRGwTYPrFYPztnJio.rig1</td><td class="dim">x</td></tr>' \
+          '<tr><td class="coin">BC2</td><td class="url">stratum+tcp://umbrel.local:4581</td><td class="dim">bc1q0m9qt239x7dz6ha3lmlr95ty5y0cc6rp59h26a.rig1</td><td class="dim">x</td></tr>' \
+          '<tr><td class="coin">BCH2</td><td class="url">stratum+tcp://umbrel.local:4582</td><td class="dim">bitcoincashii:qqrdx0ayq4zduygkv03qd6hs55lxs0345syv78d9v3.rig1</td><td class="dim">x</td></tr>' \
           '</table>' \
           '<div class="note">Install <b>ZHT MiningCore Dashboard</b> for live hashrate and worker stats.</div>' \
           '</body></html>' \
