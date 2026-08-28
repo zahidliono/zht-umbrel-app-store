@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0-bookworm-slim AS builder
+FROM mcr.microsoft.com/dotnet/sdk:9.0-bookworm-slim AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git cmake gcc g++ build-essential \
@@ -14,7 +14,7 @@ RUN find . -name "*.csproj" && \
         -o /app \
         --self-contained false
 
-FROM mcr.microsoft.com/dotnet/runtime:10.0-bookworm-slim
+FROM mcr.microsoft.com/dotnet/runtime:9.0-bookworm-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libzmq5 libsodium23 libgdiplus && \
