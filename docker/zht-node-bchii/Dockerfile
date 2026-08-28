@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim
+FROM ubuntu:24.04
 
 ARG VERSION=27.0.2
 ARG TARGETARCH
@@ -9,8 +9,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl3 \
     libevent-2.1-7 \
     libevent-pthreads-2.1-7 \
-    libboost-filesystem1.81.0 \
-    libboost-thread1.81.0 \
     libminiupnpc17 \
     libnatpmp1 \
     libzmq5 \
