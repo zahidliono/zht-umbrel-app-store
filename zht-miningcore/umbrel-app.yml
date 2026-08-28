@@ -37,7 +37,7 @@ description: >-
 
 
   Powered by MiningCore (MIT): https://github.com/oliverw/miningcore
-  Image: theretromike/miningcore
+  Image: ghcr.io/zahidliono/zht-miningcore
 
 
   © 2026 ZHT. All rights reserved.

@@ -25,7 +25,7 @@ services:
           printf '%s\n' \
             '{' \
             '  "btcd": [{"url": "umbrel-host:9002", "auth": "zahidliono", "pass": "Idd=9108", "notify": true}],' \
-            '  "btcaddress": "114iaCze9nXjXDSWqRZBXQp5tLPtraWyAS",' \
+            '  "btcaddress": "1Pr63D9axkfrPJ2aU37Zyw16pY6PDcSAk3",' \
             '  "btcsig": "/ZHT Solo BCH/",' \
             '  "blockpoll": 100,' \
             '  "nonce1length": 4,' \

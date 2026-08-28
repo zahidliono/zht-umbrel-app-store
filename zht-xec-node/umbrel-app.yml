@@ -1,0 +1,36 @@
+manifestVersion: 1
+id: zht-xec-node
+name: eCash (XEC) Node
+tagline: Full eCash node — solo mine or contribute to the XEC network.
+icon: https://e.cash/img/ecash-logo.png
+category: Mining Nodes
+version: "1.0.0"
+port: 5027
+description: |
+  Full eCash (XEC) node powered by Bitcoin ABC.
+
+  eCash (XEC) is a fork of Bitcoin Cash that uses the SHA256d algorithm, making it mineable with Bitcoin ASICs. This node connects to the XEC peer-to-peer network, downloads and fully validates the blockchain, and exposes an RPC interface for mining pool software.
+
+  Use with ZHT MiningCore Pool or ZHT Solo Pool to solo mine XEC with your Bitaxe or other ASIC.
+
+  RPC Port: 9006
+  P2P Port: 8336
+
+  Stratum mining support requires ZHT MiningCore Pool (add XEC pool) or ZHT Solo Pool.
+
+  © 2026 ZHT. All rights reserved.
+
+developer: ZHT
+website: https://github.com/zahidliono/zht-umbrel-app-store
+submitter: ZHT
+submission: https://github.com/zahidliono/zht-umbrel-app-store
+repo: https://github.com/bitcoin-abc/bitcoin-abc
+support: https://github.com/bitcoin-abc/bitcoin-abc
+gallery:
+  - https://e.cash/img/ecash-logo.png
+releaseNotes: >-
+  1.0.0 - Initial release. Bitcoin ABC full node (XEC/eCash). RPC on port 9006, P2P on 8336.
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""

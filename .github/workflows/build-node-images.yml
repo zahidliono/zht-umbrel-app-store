@@ -1,0 +1,77 @@
+name: Build Node Images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/**"
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  OWNER: zahidliono
+
+jobs:
+  build-btcii:
+    name: Build zht-node-btcii
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push zht-node-btcii
+        uses: docker/build-push-action@v6
+        with:
+          context: docker/zht-node-btcii
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.OWNER }}/zht-node-btcii:latest
+            ${{ env.REGISTRY }}/${{ env.OWNER }}/zht-node-btcii:29.1.0
+
+  build-bchii:
+    name: Build zht-node-bchii
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push zht-node-bchii
+        uses: docker/build-push-action@v6
+        with:
+          context: docker/zht-node-bchii
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.OWNER }}/zht-node-bchii:latest
+            ${{ env.REGISTRY }}/${{ env.OWNER }}/zht-node-bchii:27.0.2

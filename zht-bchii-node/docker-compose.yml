@@ -16,7 +16,7 @@ services:
       - node
 
   node:
-    image: theretromike/nodes:bitcoincashii
+    image: ghcr.io/zahidliono/zht-node-bchii:latest
     restart: on-failure
     stop_grace_period: 1m
     volumes:
