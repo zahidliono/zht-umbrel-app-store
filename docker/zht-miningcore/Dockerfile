@@ -15,10 +15,10 @@ RUN dotnet publish src/Miningcore/Miningcore.csproj \
         --self-contained true \
         -o /app
 
-FROM debian:bookworm-slim
+FROM mcr.microsoft.com/dotnet/runtime-deps:9.0-bookworm-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        libzmq5 libsodium23 libgdiplus libssl3 ca-certificates && \
+        libzmq5 libsodium23 libgdiplus && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
