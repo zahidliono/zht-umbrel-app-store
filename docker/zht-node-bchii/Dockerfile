@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libboost-filesystem1.81.0 \
     libboost-thread1.81.0 \
     libminiupnpc17 \
+    libnatpmp1 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN set -eux; \
