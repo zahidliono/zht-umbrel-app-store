@@ -3,7 +3,9 @@ FROM ubuntu:24.04
 ARG VERSION=27.0.2
 ARG TARGETARCH
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
     wget \
     ca-certificates \
     libssl3 \
@@ -13,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libnatpmp1 \
     libzmq5 \
     libsqlite3-0 \
+    libstdc++6 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN set -eux; \
