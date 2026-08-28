@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:9.0-bookworm-slim AS builder
+FROM mcr.microsoft.com/dotnet/sdk:10.0-bookworm-slim AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git cmake gcc g++ build-essential \
@@ -6,16 +6,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
-RUN git clone --depth 1 https://github.com/oliverw/miningcore.git .
+RUN git clone https://github.com/oliverw/miningcore.git .
 
-# Print project files to diagnose path issues, then build
-RUN echo "--- csproj files ---" && find . -name "*.csproj" && echo "---" && \
+RUN find . -name "*.csproj" && \
     dotnet publish src/Miningcore/Miningcore.csproj \
         -c Release \
         -o /app \
         --self-contained false
 
-FROM mcr.microsoft.com/dotnet/runtime:9.0-bookworm-slim
+FROM mcr.microsoft.com/dotnet/runtime:10.0-bookworm-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libzmq5 libsodium23 libgdiplus && \
