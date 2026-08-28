@@ -21,6 +21,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libzmq5 libsodium23 libgdiplus && \
     rm -rf /var/lib/apt/lists/*
 
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+
 WORKDIR /app
 COPY --from=builder /app .
 
