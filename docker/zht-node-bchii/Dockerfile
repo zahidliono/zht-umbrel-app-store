@@ -1,21 +1,12 @@
-FROM ubuntu:22.04
+FROM fedora:40
 
 ARG VERSION=27.0.2
 ARG TARGETARCH
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-# ubuntu:22.04 has libminiupnpc17 (Noble/24.04 renamed it to libminiupnpc21).
-# The toolchain PPA provides GCC 14's libstdc++6, which includes GLIBCXX_3.4.32.
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends software-properties-common ca-certificates && \
-    add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
-        wget libssl3 libevent-2.1-7 libevent-pthreads-2.1-7 \
-        libminiupnpc17 libnatpmp1 libzmq5 libsqlite3-0 libstdc++6 && \
-    apt-get purge -y --auto-remove software-properties-common && \
-    rm -rf /var/lib/apt/lists/*
+# Fedora 40 ships GCC 14 (GLIBCXX_3.4.32) and miniupnpc with soname 17 natively.
+RUN dnf install -y --setopt=install_weak_deps=False \
+        wget openssl-libs libevent miniupnpc libnatpmp zeromq sqlite-libs \
+    && dnf clean all
 
 RUN set -eux; \
     case "${TARGETARCH}" in \
