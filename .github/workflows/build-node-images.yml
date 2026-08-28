@@ -70,7 +70,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: docker/zht-miningcore
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.OWNER }}/zht-miningcore:latest

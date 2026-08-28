@@ -1,6 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim AS builder
 
-RUN apt-get update && apt-get install -y --no-install-recommends git && \
+# cmake + gcc needed to compile MiningCore's native libmultihash crypto libraries
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git cmake gcc g++ build-essential libssl-dev && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
@@ -9,7 +11,7 @@ RUN git clone --depth 1 https://github.com/oliverw/miningcore.git .
 RUN dotnet publish src/Miningcore/Miningcore.csproj \
         -c Release \
         -o /app \
-        --no-self-contained
+        --self-contained false
 
 FROM mcr.microsoft.com/dotnet/runtime:8.0-bookworm-slim
 
