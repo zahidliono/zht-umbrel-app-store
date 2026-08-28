@@ -8,10 +8,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     libssl3 \
     libevent-2.1-7 \
+    libevent-pthreads-2.1-7 \
     libboost-filesystem1.81.0 \
     libboost-thread1.81.0 \
     libminiupnpc17 \
     libnatpmp1 \
+    libzmq5 \
+    libsqlite3-0 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN set -eux; \
