@@ -1,0 +1,41 @@
+manifestVersion: 1
+id: zht-fb-stratum
+category: Mining Nodes
+name: ZHT FB Solo Stratum
+version: "1.0.0"
+port: 5033
+tagline: Lightweight Stratum v1 solo pool for Fractal Bitcoin (FB)
+description: >-
+  A minimal Python Stratum v1 solo mining server for Fractal Bitcoin (FB).
+  Connects directly to your ZHT FB Node and serves SHA-256 work to your ASIC
+  miner. No database, no .NET — just a single lightweight container.
+
+
+  Requires:
+    - Fractal Bitcoin (FB) Node (zht-fb-node) installed and synced
+
+
+  ASIC Stratum Port:
+    - FB → stratum+tcp://<umbrel-ip>:4584
+
+
+  Worker format: YOUR_FB_ADDRESS.rig1
+  Password: x (anything)
+
+
+  Block rewards pay directly to the configured payout address.
+
+developer: ZHT
+website: https://github.com/zahidliono/zht-umbrel-app-store
+repo: https://github.com/zahidliono/zht-umbrel-app-store
+support: https://github.com/zahidliono/zht-umbrel-app-store
+submitter: ZHT
+dependencies: []
+icon: https://fractalbitcoin.io/img/logo/fractal.svg
+gallery:
+  - https://fractalbitcoin.io/img/logo/fractal.svg
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+releaseNotes: >-
+  1.0.0 - Initial release. Lightweight Python stratum server for FB solo mining on port 4584.

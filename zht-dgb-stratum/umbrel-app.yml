@@ -1,0 +1,41 @@
+manifestVersion: 1
+id: zht-dgb-stratum
+category: Mining Nodes
+name: ZHT DGB Solo Stratum
+version: "1.0.0"
+port: 5032
+tagline: Lightweight Stratum v1 solo pool for DigiByte SHA-256 (DGB)
+description: >-
+  A minimal Python Stratum v1 solo mining server for DigiByte SHA-256 (DGB).
+  Connects directly to your ZHT DGB Node and serves SHA-256 work to your ASIC
+  miner. No database, no .NET — just a single lightweight container.
+
+
+  Requires:
+    - DigiByte SHA-256 Node (zht-dgb-node-sha256) installed and synced
+
+
+  ASIC Stratum Port:
+    - DGB → stratum+tcp://<umbrel-ip>:4580
+
+
+  Worker format: YOUR_DGB_ADDRESS.rig1
+  Password: x (anything)
+
+
+  Block rewards pay directly to the configured payout address.
+
+developer: ZHT
+website: https://github.com/zahidliono/zht-umbrel-app-store
+repo: https://github.com/zahidliono/zht-umbrel-app-store
+support: https://github.com/zahidliono/zht-umbrel-app-store
+submitter: ZHT
+dependencies: []
+icon: https://github.com/DigiByte-Core/digibyte-logos/blob/master/Logos%20Bitmap/transparent%20bg/ClearBg%20DigiByte.png?raw=true
+gallery:
+  - https://github.com/DigiByte-Core/digibyte-logos/blob/master/Logos%20Bitmap/transparent%20bg/ClearBg%20DigiByte.png?raw=true
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+releaseNotes: >-
+  1.0.0 - Initial release. Lightweight Python stratum server for DGB SHA-256 solo mining on port 4580.
