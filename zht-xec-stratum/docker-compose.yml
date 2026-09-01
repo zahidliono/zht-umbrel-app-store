@@ -19,7 +19,7 @@ services:
       RPC_PORT: "9006"
       RPC_USER: zahidliono
       RPC_PASS: "Idd=9108"
-      PAYOUT_ADDRESS: "ecash:qqrdx0ayq4zduygkv03qd6hs55lxs0345s0gna6pdg"
+      PAYOUT_ADDRESS: "ecash:qqjdnxm6h9q6n5rkr06lns4sustu7qympywm0kt5aa"
       STRATUM_PORT: "4583"
       DIFFICULTY: "1"
       COINBASE_MSG: "ZHT"

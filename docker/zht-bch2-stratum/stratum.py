@@ -49,12 +49,45 @@ def _base58_hash160(addr: str) -> bytes:
         n = n * 58 + _BASE58.index(c)
     return n.to_bytes(25, "big")[1:21]
 
+def _bech32_hash160(addr: str) -> bytes:
+    """Decode bech32 P2WPKH address (bc1q... style) to 20-byte witness program."""
+    a = addr.lower()
+    sep = a.find("1")
+    data_chars = a[sep + 1:-6]  # strip 6-char checksum
+    vals = [_CASHADDR.index(c) for c in data_chars]
+    # vals[0] is witness version; skip it and convert remaining 5-bit groups to bytes
+    acc = 0; bits = 0; out = []
+    for v in vals[1:]:
+        acc = (acc << 5) | v
+        bits += 5
+        while bits >= 8:
+            bits -= 8
+            out.append((acc >> bits) & 0xff)
+    return bytes(out[:20])
+
 def address_to_script(addr: str) -> bytes:
     try:
-        h = _cashaddr_hash160(addr) if (":" in addr or addr[:1] == "q") else _base58_hash160(addr)
+        a = addr.lower()
+        if ":" in a:
+            # cashaddr: bitcoincash:q..., ecash:q..., bitcoincashii:q..., etc.
+            h = _cashaddr_hash160(addr)
+            return b"\x76\xa9\x14" + h + b"\x88\xac"
+        sep = a.find("1")
+        if (sep >= 1 and a[:sep].isalpha()
+                and all(c in _CASHADDR for c in a[sep + 1:])):
+            # bech32: bc1q..., etc. — P2WPKH output
+            h = _bech32_hash160(addr)
+            return b"\x00\x14" + h
+        elif a[:1] == "q":
+            # bare cashaddr without prefix
+            h = _cashaddr_hash160(addr)
+            return b"\x76\xa9\x14" + h + b"\x88\xac"
+        else:
+            # legacy base58: 1..., 3...
+            h = _base58_hash160(addr)
+            return b"\x76\xa9\x14" + h + b"\x88\xac"
     except Exception:
-        h = b"\x00" * 20
-    return b"\x76\xa9\x14" + h + b"\x88\xac"
+        return b"\x76\xa9\x14" + b"\x00" * 20 + b"\x88\xac"
 
 # ── RPC ───────────────────────────────────────────────────────────────────────
 def rpc(method: str, params=None):
