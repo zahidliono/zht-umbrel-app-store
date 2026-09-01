@@ -244,7 +244,14 @@ class MinerSession:
                 line = await asyncio.wait_for(self.reader.readline(), timeout=600)
                 if not line:
                     break
-                await self._dispatch(json.loads(line.decode().strip()))
+                raw = line.decode(errors="replace").strip()
+                log.info("RECV %s  %s", self.peer, raw)
+                try:
+                    msg = json.loads(raw)
+                except json.JSONDecodeError as e:
+                    log.warning("JSON parse error from %s: %s  raw=%r", self.peer, e, raw)
+                    continue
+                await self._dispatch(msg)
         except (asyncio.TimeoutError, ConnectionResetError, BrokenPipeError, EOFError):
             pass
         except Exception as e:
