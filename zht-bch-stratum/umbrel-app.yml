@@ -1,0 +1,41 @@
+manifestVersion: 1
+id: zht-bch-stratum
+category: Mining Nodes
+name: ZHT BCH Solo Stratum
+version: "1.0.0"
+port: 5028
+tagline: Lightweight Stratum v1 solo pool for Bitcoin Cash (BCH)
+description: >-
+  A minimal Python Stratum v1 solo mining server for Bitcoin Cash (BCH).
+  Connects directly to your ZHT BCH Node and serves SHA-256 work to your ASIC
+  miner. No database, no .NET — just a single lightweight container.
+
+
+  Requires:
+    - Bitcoin Cash (BCH) Node (zht-bch-node) installed and synced
+
+
+  ASIC Stratum Port:
+    - BCH → stratum+tcp://<umbrel-ip>:4577
+
+
+  Worker format: bitcoincash:YOUR_BCH_ADDRESS.rig1
+  Password: x (anything)
+
+
+  Block rewards pay directly to the configured payout address.
+
+developer: ZHT
+website: https://github.com/zahidliono/zht-umbrel-app-store
+repo: https://github.com/zahidliono/zht-umbrel-app-store
+support: https://github.com/zahidliono/zht-umbrel-app-store
+submitter: ZHT
+dependencies: []
+icon: https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+gallery:
+  - https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+releaseNotes: >-
+  1.0.0 - Initial release. Lightweight Python stratum server for BCH solo mining on port 4577.

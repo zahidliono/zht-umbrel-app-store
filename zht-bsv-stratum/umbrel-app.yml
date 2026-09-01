@@ -1,0 +1,41 @@
+manifestVersion: 1
+id: zht-bsv-stratum
+category: Mining Nodes
+name: ZHT BSV Solo Stratum
+version: "1.0.0"
+port: 5029
+tagline: Lightweight Stratum v1 solo pool for Bitcoin SV (BSV)
+description: >-
+  A minimal Python Stratum v1 solo mining server for Bitcoin SV (BSV).
+  Connects directly to your ZHT BSV Node and serves SHA-256 work to your ASIC
+  miner. No database, no .NET — just a single lightweight container.
+
+
+  Requires:
+    - Bitcoin SV (BSV) Node (zht-bsv-node) installed and synced
+
+
+  ASIC Stratum Port:
+    - BSV → stratum+tcp://<umbrel-ip>:4578
+
+
+  Worker format: YOUR_BSV_ADDRESS.rig1
+  Password: x (anything)
+
+
+  Block rewards pay directly to the configured payout address.
+
+developer: ZHT
+website: https://github.com/zahidliono/zht-umbrel-app-store
+repo: https://github.com/zahidliono/zht-umbrel-app-store
+support: https://github.com/zahidliono/zht-umbrel-app-store
+submitter: ZHT
+dependencies: []
+icon: https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+gallery:
+  - https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+releaseNotes: >-
+  1.0.0 - Initial release. Lightweight Python stratum server for BSV solo mining on port 4578.

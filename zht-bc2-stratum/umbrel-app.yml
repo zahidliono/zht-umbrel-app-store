@@ -1,0 +1,41 @@
+manifestVersion: 1
+id: zht-bc2-stratum
+category: Mining Nodes
+name: ZHT BC2 Solo Stratum
+version: "1.0.0"
+port: 5030
+tagline: Lightweight Stratum v1 solo pool for Bitcoin II (BC2)
+description: >-
+  A minimal Python Stratum v1 solo mining server for Bitcoin II (BC2).
+  Connects directly to your ZHT BC2 Node and serves SHA-256 work to your ASIC
+  miner. No database, no .NET — just a single lightweight container.
+
+
+  Requires:
+    - Bitcoin II (BC2) Node (zht-btcii-node) installed and synced
+
+
+  ASIC Stratum Port:
+    - BC2 → stratum+tcp://<umbrel-ip>:4581
+
+
+  Worker format: YOUR_BC2_ADDRESS.rig1
+  Password: x (anything)
+
+
+  Block rewards pay directly to the configured payout address.
+
+developer: ZHT
+website: https://github.com/zahidliono/zht-umbrel-app-store
+repo: https://github.com/zahidliono/zht-umbrel-app-store
+support: https://github.com/zahidliono/zht-umbrel-app-store
+submitter: ZHT
+dependencies: []
+icon: https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+gallery:
+  - https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+releaseNotes: >-
+  1.0.0 - Initial release. Lightweight Python stratum server for BC2 solo mining on port 4581.

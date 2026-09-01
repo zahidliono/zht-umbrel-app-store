@@ -1,0 +1,41 @@
+manifestVersion: 1
+id: zht-xec-stratum
+category: Mining Nodes
+name: ZHT XEC Solo Stratum
+version: "1.0.0"
+port: 5031
+tagline: Lightweight Stratum v1 solo pool for eCash (XEC)
+description: >-
+  A minimal Python Stratum v1 solo mining server for eCash (XEC).
+  Connects directly to your ZHT XEC Node and serves SHA-256 work to your ASIC
+  miner. No database, no .NET — just a single lightweight container.
+
+
+  Requires:
+    - eCash (XEC) Node (zht-xec-node) installed and synced
+
+
+  ASIC Stratum Port:
+    - XEC → stratum+tcp://<umbrel-ip>:4583
+
+
+  Worker format: ecash:YOUR_XEC_ADDRESS.rig1
+  Password: x (anything)
+
+
+  Block rewards pay directly to the configured payout address.
+
+developer: ZHT
+website: https://github.com/zahidliono/zht-umbrel-app-store
+repo: https://github.com/zahidliono/zht-umbrel-app-store
+support: https://github.com/zahidliono/zht-umbrel-app-store
+submitter: ZHT
+dependencies: []
+icon: https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+gallery:
+  - https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+path: ""
+defaultUsername: ""
+defaultPassword: ""
+releaseNotes: >-
+  1.0.0 - Initial release. Lightweight Python stratum server for XEC solo mining on port 4583.
