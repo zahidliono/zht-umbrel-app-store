@@ -68,12 +68,42 @@ jobs:
 
       - name: Build and push zht-miningcore
         uses: docker/build-push-action@v6
+        env:
+          BUILDKIT_PROGRESS: plain
         with:
           context: docker/zht-miningcore
           platforms: linux/amd64
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.OWNER }}/zht-miningcore:latest
+
+  build-bch2-stratum:
+    name: Build zht-bch2-stratum
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push zht-bch2-stratum
+        uses: docker/build-push-action@v6
+        with:
+          context: docker/zht-bch2-stratum
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.OWNER }}/zht-bch2-stratum:latest
 
   build-bchii:
     name: Build zht-node-bchii
