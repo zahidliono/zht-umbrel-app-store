@@ -270,36 +270,29 @@ class MinerSession:
             return
 
         log.info("Share submitted: en2=%s ntime=%s nonce=%s job=%s", en2, ntime, nonce, job_id)
-        val = job.hash_value(en2, ntime, nonce)
-        log.info("Hash: %064x  target: %064x", val, self.target)
-        if val > self.target:
-            # Also try nonce in opposite byte order (some firmware submits BE, some LE)
-            nonce_swapped = bytes.fromhex(nonce)[::-1].hex()
-            val2 = job.hash_value(en2, ntime, nonce_swapped)
-            log.info("Hash (nonce swapped): %064x", val2)
-            if val2 > self.target:
-                self._send({"id": mid, "result": False, "error": [23, "Low difficulty", None]})
-                log.info("Share rejected (low diff) from %s", self.peer)
-                return
-            val = val2
-            nonce = nonce_swapped
 
+        # Accept all shares unconditionally (solo mining — no one to cheat).
+        # Only check network difficulty to detect block solutions.
         self._send({"id": mid, "result": True, "error": None})
         log.info("Share accepted from %s  height=%d", self.peer, job.height)
 
+        # Check both nonce byte orders in case firmware differs from our convention.
         net_target = bits_to_target(job.bits)
-        if val <= net_target:
-            log.info("*** BLOCK FOUND at height %d! Submitting ***", job.height)
-            blk = job.build_block(en2, ntime, nonce)
-            loop = asyncio.get_event_loop()
-            try:
-                result = await loop.run_in_executor(None, rpc, "submitblock", [blk])
-                if result is None:
-                    log.info("Block accepted by the network!")
-                else:
-                    log.warning("submitblock returned: %s", result)
-            except Exception as e:
-                log.error("submitblock error: %s", e)
+        for n in (nonce, bytes.fromhex(nonce)[::-1].hex()):
+            val = job.hash_value(en2, ntime, n)
+            if val <= net_target:
+                log.info("*** BLOCK FOUND at height %d! Submitting ***", job.height)
+                blk = job.build_block(en2, ntime, n)
+                loop = asyncio.get_event_loop()
+                try:
+                    result = await loop.run_in_executor(None, rpc, "submitblock", [blk])
+                    if result is None:
+                        log.info("Block accepted by the network!")
+                    else:
+                        log.warning("submitblock returned: %s", result)
+                except Exception as e:
+                    log.error("submitblock error: %s", e)
+                break
 
 # ── Server ────────────────────────────────────────────────────────────────────
 class StratumServer:
