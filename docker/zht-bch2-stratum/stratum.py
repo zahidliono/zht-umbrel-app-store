@@ -318,7 +318,7 @@ class StratumServer:
         await s.run()
 
     async def _status(self):
-        """Tiny HTTP status page on port 80."""
+        """Tiny HTTP status page on port 8080 (non-privileged)."""
         async def handle(r, w):
             await r.readline()  # consume request line
             body = (
@@ -332,7 +332,7 @@ class StratumServer:
                     b"Connection: close\r\n\r\n" + body)
             await w.drain()
             w.close()
-        srv = await asyncio.start_server(handle, "0.0.0.0", 80)
+        srv = await asyncio.start_server(handle, "0.0.0.0", 8080)
         async with srv:
             await srv.serve_forever()
 
