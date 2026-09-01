@@ -257,9 +257,16 @@ class MinerSession:
     async def _dispatch(self, msg: dict):
         mid, method, params = msg.get("id"), msg.get("method", ""), msg.get("params", [])
 
-        if method == "mining.subscribe":
+        if method == "mining.configure":
+            # Feature negotiation (BIP310/AsicBoost). Decline all extensions
+            # so the miner falls back to plain stratum.
+            result = {k: False for k in (params[0] if params else [])}
+            self._send({"id": mid, "result": result, "error": None})
+
+        elif method == "mining.subscribe":
             self._send({"id": mid, "result": [
-                [["mining.notify", "zht01"]],
+                [["mining.set_difficulty", "zht/diff"],
+                 ["mining.notify",         "zht/work"]],
                 self.en1.hex(), EN2_LEN], "error": None})
             self._send({"id": None, "method": "mining.set_difficulty", "params": [DIFF]})
             self.push_job(self.server.template, clean=True)
@@ -273,16 +280,14 @@ class MinerSession:
             await self._submit(mid, params)
 
         elif method == "mining.ping":
-            self._send({"id": mid, "method": "mining.pong", "params": []})
-
-        elif method == "mining.extranonce.subscribe":
             self._send({"id": mid, "result": True, "error": None})
 
-        elif method == "mining.get_transactions":
-            self._send({"id": mid, "result": [], "error": None})
+        elif method in ("mining.extranonce.subscribe", "mining.suggest_difficulty",
+                        "mining.suggest_target", "mining.get_transactions"):
+            self._send({"id": mid, "result": True, "error": None})
 
         else:
-            log.debug("Unhandled method %s from %s", method, self.peer)
+            log.debug("Unhandled method %s params=%s from %s", method, params, self.peer)
             if mid is not None:
                 self._send({"id": mid, "result": True, "error": None})
 
