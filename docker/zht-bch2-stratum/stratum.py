@@ -134,7 +134,8 @@ class Job:
     # ── Stratum notify params ─────────────────────────────────────────────────
     def notify_params(self, clean=True) -> list:
         ph = bytes.fromhex(self.prevhash)
-        ph_stratum = b"".join(ph[i:i+4][::-1] for i in range(0, 32, 4)).hex()
+        # Reverse the order of 4-byte groups; bytes within each group stay intact.
+        ph_stratum = b"".join(ph[i:i+4] for i in range(28, -1, -4)).hex()
         return [
             self.id,
             ph_stratum,
@@ -254,8 +255,12 @@ class MinerSession:
 
     async def _submit(self, mid, params):
         try:
-            _, job_id, en2, ntime, nonce = params
-        except (ValueError, TypeError):
+            if len(params) < 5:
+                raise ValueError
+            _, job_id, en2, ntime, nonce = params[0], params[1], params[2], params[3], params[4]
+            # params[5] would be version_bits (BIP320 AsicBoost) — ignored for now
+        except (ValueError, TypeError, IndexError):
+            log.warning("Malformed submit params from %s: %s", self.peer, params)
             self._send({"id": mid, "result": False, "error": [20, "Malformed params", None]})
             return
 
@@ -264,11 +269,20 @@ class MinerSession:
             self._send({"id": mid, "result": False, "error": [21, "Job not found", None]})
             return
 
+        log.info("Share submitted: en2=%s ntime=%s nonce=%s job=%s", en2, ntime, nonce, job_id)
         val = job.hash_value(en2, ntime, nonce)
+        log.info("Hash: %064x  target: %064x", val, self.target)
         if val > self.target:
-            self._send({"id": mid, "result": False, "error": [23, "Low difficulty", None]})
-            log.info("Share rejected (low diff) from %s", self.peer)
-            return
+            # Also try nonce in opposite byte order (some firmware submits BE, some LE)
+            nonce_swapped = bytes.fromhex(nonce)[::-1].hex()
+            val2 = job.hash_value(en2, ntime, nonce_swapped)
+            log.info("Hash (nonce swapped): %064x", val2)
+            if val2 > self.target:
+                self._send({"id": mid, "result": False, "error": [23, "Low difficulty", None]})
+                log.info("Share rejected (low diff) from %s", self.peer)
+                return
+            val = val2
+            nonce = nonce_swapped
 
         self._send({"id": mid, "result": True, "error": None})
         log.info("Share accepted from %s  height=%d", self.peer, job.height)
