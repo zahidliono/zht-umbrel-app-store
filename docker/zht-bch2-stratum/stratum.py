@@ -269,12 +269,19 @@ class MinerSession:
         elif method == "mining.submit":
             await self._submit(mid, params)
 
+        elif method == "mining.ping":
+            self._send({"id": mid, "method": "mining.pong", "params": []})
+
+        elif method == "mining.extranonce.subscribe":
+            self._send({"id": mid, "result": True, "error": None})
+
         elif method == "mining.get_transactions":
             self._send({"id": mid, "result": [], "error": None})
 
         else:
+            log.debug("Unhandled method %s from %s", method, self.peer)
             if mid is not None:
-                self._send({"id": mid, "result": None, "error": None})
+                self._send({"id": mid, "result": True, "error": None})
 
     def push_job(self, tpl: dict | None, clean: bool = False):
         if tpl is None:
