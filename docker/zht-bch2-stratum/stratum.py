@@ -223,13 +223,16 @@ def bits_to_target(bits_hex: str) -> int:
 # ── Miner session ─────────────────────────────────────────────────────────────
 class MinerSession:
     def __init__(self, reader, writer, server):
-        self.reader  = reader
-        self.writer  = writer
-        self.server  = server
-        self.peer    = writer.get_extra_info("peername")
-        self.en1     = os.urandom(EN1_LEN)
-        self.target  = diff_to_target(DIFF)
+        self.reader       = reader
+        self.writer       = writer
+        self.server       = server
+        self.peer         = writer.get_extra_info("peername")
+        self.en1          = os.urandom(EN1_LEN)
+        self.target       = diff_to_target(DIFF)
         self.jobs: dict[str, Job] = {}
+        self.worker       = "?"
+        self.connected_at = time.time()
+        self.shares       = 0
 
     def _send(self, obj: dict):
         self.writer.write((json.dumps(obj) + "\n").encode())
@@ -262,8 +265,8 @@ class MinerSession:
             self.push_job(self.server.template, clean=True)
 
         elif method == "mining.authorize":
-            worker = params[0] if params else "?"
-            log.info("Worker authorized %s @ %s", worker, self.peer)
+            self.worker = params[0] if params else "?"
+            log.info("Worker authorized %s @ %s", self.worker, self.peer)
             self._send({"id": mid, "result": True, "error": None})
 
         elif method == "mining.submit":
@@ -313,8 +316,9 @@ class MinerSession:
 
         # Accept all shares unconditionally (solo mining — no one to cheat).
         # Only check network difficulty to detect block solutions.
+        self.shares += 1
         self._send({"id": mid, "result": True, "error": None})
-        log.info("Share accepted from %s  height=%d", self.peer, job.height)
+        log.info("Share accepted from %s  height=%d  total=%d", self.peer, job.height, self.shares)
 
         # Check both nonce byte orders in case firmware differs from our convention.
         net_target = bits_to_target(job.bits)
@@ -340,6 +344,7 @@ class StratumServer:
         self.sessions: set[MinerSession] = set()
         self.template: dict | None = None
         self._last_height = -1
+        self._start_time  = time.time()
 
     async def _poll(self):
         while True:
@@ -365,20 +370,72 @@ class StratumServer:
         await s.run()
 
     async def _status(self):
-        """Tiny HTTP status page on port 8080 (non-privileged)."""
+        """HTTP dashboard on port 8080."""
         async def handle(r, w):
-            await r.readline()  # consume request line
-            body = (
-                f"<h1>BCH2 Solo Stratum</h1>"
-                f"<p>Height: {self._last_height}</p>"
-                f"<p>Miners connected: {len(self.sessions)}</p>"
-                f"<p>Stratum port: {PORT}</p>"
-                f"<p>Payout: {PAYOUT}</p>"
-            ).encode()
-            w.write(b"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
-                    b"Connection: close\r\n\r\n" + body)
-            await w.drain()
-            w.close()
+            try:
+                req = await r.readline()
+                # drain remaining headers
+                while True:
+                    line = await r.readline()
+                    if line in (b"\r\n", b"\n", b""):
+                        break
+                if req.startswith(b"GET /api"):
+                    rows = [{"worker": s.worker,
+                             "ip": s.peer[0] if s.peer else "?",
+                             "connected_secs": int(time.time() - s.connected_at),
+                             "shares": s.shares}
+                            for s in self.sessions]
+                    body = json.dumps({"height": self._last_height,
+                                       "miners": len(self.sessions),
+                                       "payout": PAYOUT,
+                                       "port": PORT,
+                                       "uptime": int(time.time() - self._start_time),
+                                       "sessions": rows}).encode()
+                    w.write(b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n"
+                            b"Connection: close\r\n\r\n" + body)
+                else:
+                    uptime_s = int(time.time() - self._start_time)
+                    h, m = divmod(uptime_s // 60, 60)
+                    uptime_str = f"{h}h {m}m"
+                    rows_html = "".join(
+                        f"<tr><td>{s.worker}</td><td>{s.peer[0] if s.peer else '?'}</td>"
+                        f"<td>{int((time.time()-s.connected_at)//60)}m</td>"
+                        f"<td>{s.shares}</td></tr>"
+                        for s in self.sessions
+                    ) or "<tr><td colspan='4'>No miners connected</td></tr>"
+                    body = f"""<!DOCTYPE html><html><head><meta charset='utf-8'>
+<meta http-equiv='refresh' content='10'>
+<title>ZHT Solo Stratum</title>
+<style>
+  body{{font-family:monospace;background:#0d1117;color:#c9d1d9;padding:24px;margin:0}}
+  h2{{color:#58a6ff;margin:0 0 16px}}
+  .grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px}}
+  .card{{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}}
+  .card .val{{font-size:1.6em;font-weight:bold;color:#58a6ff}}
+  .card .lbl{{font-size:.8em;color:#8b949e;margin-top:4px}}
+  table{{width:100%;border-collapse:collapse;background:#161b22;border-radius:8px;overflow:hidden}}
+  th{{background:#21262d;color:#8b949e;padding:10px 14px;text-align:left;font-size:.8em;text-transform:uppercase}}
+  td{{padding:10px 14px;border-top:1px solid #30363d;color:#c9d1d9}}
+  .addr{{font-size:.75em;color:#8b949e;margin-top:12px}}
+</style></head><body>
+<h2>ZHT Solo Stratum</h2>
+<div class='grid'>
+  <div class='card'><div class='val'>{self._last_height}</div><div class='lbl'>Block Height</div></div>
+  <div class='card'><div class='val'>{len(self.sessions)}</div><div class='lbl'>Miners Connected</div></div>
+  <div class='card'><div class='val'>{PORT}</div><div class='lbl'>Stratum Port</div></div>
+  <div class='card'><div class='val'>{uptime_str}</div><div class='lbl'>Uptime</div></div>
+</div>
+<table><thead><tr><th>Worker</th><th>IP</th><th>Connected</th><th>Shares</th></tr></thead>
+<tbody>{rows_html}</tbody></table>
+<div class='addr'>Payout: {PAYOUT}</div>
+</body></html>""".encode()
+                    w.write(b"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n"
+                            b"Connection: close\r\n\r\n" + body)
+                await w.drain()
+            except Exception:
+                pass
+            finally:
+                w.close()
         srv = await asyncio.start_server(handle, "0.0.0.0", 8080)
         async with srv:
             await srv.serve_forever()
