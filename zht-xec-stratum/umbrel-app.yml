@@ -31,9 +31,9 @@ repo: https://github.com/zahidliono/zht-umbrel-app-store
 support: https://github.com/zahidliono/zht-umbrel-app-store
 submitter: ZHT
 dependencies: []
-icon: https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+icon: https://e.cash/img/ecash-logo.png
 gallery:
-  - https://bitcoincash.org/img/green/bitcoin-cash-circle.svg
+  - https://e.cash/img/ecash-logo.png
 path: ""
 defaultUsername: ""
 defaultPassword: ""
