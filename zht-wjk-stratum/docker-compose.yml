@@ -1,0 +1,39 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: zht-wjk-stratum-web
+      APP_PORT: 8080
+      JWT_SECRET: "${JWT_SECRET}"
+    networks:
+      - umbrel_main_network
+
+  stratum:
+    image: ghcr.io/zahidliono/zht-bch2-stratum:latest
+    restart: unless-stopped
+    stop_grace_period: 10s
+    user: "1000:1000"
+    environment:
+      RPC_HOST: umbrel-host
+      RPC_PORT: "9012"
+      RPC_USER: zahidliono
+      RPC_PASS: "Idd=9108"
+      PAYOUT_ADDRESS: "WQ2BfHzWLfV9o5FDmU61KMJJ5rpqdvao61"
+      STRATUM_PORT: "4586"
+      DIFFICULTY: "1"
+      COINBASE_MSG: "ZHT"
+    extra_hosts:
+      - "umbrel-host:host-gateway"
+    ports:
+      - "4586:4586/tcp"
+    networks:
+      default: {}
+      umbrel_main_network:
+        aliases:
+          - zht-wjk-stratum-web
+
+networks:
+  umbrel_main_network:
+    external: true
+    name: umbrel_main_network

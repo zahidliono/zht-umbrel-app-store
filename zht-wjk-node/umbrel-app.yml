@@ -1,0 +1,36 @@
+manifestVersion: 1
+id: zht-wjk-node
+name: WojakcCoin (WJK) Node
+tagline: Full WojakcCoin node — solo mine or contribute to the WJK network.
+icon: https://wojakcoin.cash/favicon.ico
+category: Mining Nodes
+version: "1.21.3.0"
+port: 5036
+description: |
+  Full WojakcCoin (WJK) node powered by WojakCore v1.21.3.0.
+
+  WojakcCoin is a SHA-256d proof-of-work meme coin fully compatible with Bitcoin ASICs. This node connects to the WJK peer-to-peer network, downloads and fully validates the blockchain, and exposes an RPC interface for mining pool software.
+
+  Use with ZHT WJK Solo Stratum to solo mine WojakcCoin with your Bitaxe or other SHA-256 ASIC.
+
+  RPC Port: 9012
+  P2P Port: 20759
+
+  Stratum mining support requires ZHT WJK Solo Stratum (zht-wjk-stratum).
+
+  © 2026 ZHT. All rights reserved.
+
+developer: ZHT
+website: https://github.com/zahidliono/zht-umbrel-app-store
+submitter: ZHT
+submission: https://github.com/zahidliono/zht-umbrel-app-store
+repo: https://github.com/WojakCoinProj/wojakcore
+support: https://github.com/WojakCoinProj/wojakcore
+gallery:
+  - https://wojakcoin.cash/favicon.ico
+releaseNotes: >-
+  1.0.0 - Initial release. WojakCore v1.21.3.0 full node. RPC on port 9012, P2P on 20759.
+dependencies: []
+path: ""
+defaultUsername: ""
+defaultPassword: ""
